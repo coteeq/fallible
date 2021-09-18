@@ -1,3 +1,5 @@
+#pragma once
+
 #include <wheels/result/result.hpp>
 
 #include <wheels/support/function.hpp>
