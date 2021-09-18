@@ -150,9 +150,17 @@ class [[nodiscard]] Result {
     error_.ThrowIfError();
   }
 
-  // Ignore result, just check for error
-  void ExpectOk() {
-    ThrowIfError();
+  // Ignores value, panics on error
+  // Usage: result.ExpectOk();
+  void ExpectOk(SourceLocation where = SourceLocation::Current()) {
+    ExpectImpl(where, "Unexpected error");
+  }
+
+  // Ignores value, panics on error
+  // Usage: result.ExpectOk("Something bad happens");
+  void ExpectOk(const std::string& or_error,
+                SourceLocation where = SourceLocation::Current()) {
+    ExpectImpl(where, or_error);
   }
 
   void Ignore() {
@@ -295,6 +303,13 @@ class [[nodiscard]] Result {
     }
   }
 
+  void ExpectImpl(SourceLocation where, const std::string& or_error) {
+    if (!IsOk()) {
+      detail::Panic(where, StringBuilder()
+                               << "Result::ExpectOk failed: " << or_error);
+    }
+  }
+
  private:
   detail::ValueStorage<T> value_;
   Error error_;
@@ -337,8 +352,17 @@ class [[nodiscard]] Result<void> {
     error_.ThrowIfError();
   }
 
-  void ExpectOk() {
-    ThrowIfError();
+  // Ignores value, panics on error
+  // Usage: status.ExpectOk();
+  void ExpectOk(SourceLocation where = SourceLocation::Current()) {
+    ExpectImpl(where, "Unexpected error");
+  }
+
+  // Ignores value, panics on error
+  // Usage: status.ExpectOk("Something bad happens");
+  void ExpectOk(const std::string& or_error,
+                SourceLocation where = SourceLocation::Current()) {
+    ExpectImpl(where, or_error);
   }
 
   void Ignore() {
@@ -367,6 +391,13 @@ class [[nodiscard]] Result<void> {
   Result(Error error) {
     WHEELS_VERIFY(error.HasError(), "Expected non-empty error");
     error_ = std::move(error);
+  }
+
+  void ExpectImpl(SourceLocation where, const std::string& or_error) {
+    if (!IsOk()) {
+      detail::Panic(where, StringBuilder()
+                               << "Status::ExpectOk failed: " << or_error);
+    }
   }
 
  private:
