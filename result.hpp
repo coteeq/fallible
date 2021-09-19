@@ -153,14 +153,23 @@ class [[nodiscard]] Result {
   // Ignores value, panics on error
   // Usage: result.ExpectOk();
   void ExpectOk(SourceLocation where = SourceLocation::Current()) {
-    ExpectImpl(where, "Unexpected error");
+    ExpectOkImpl(where, "Unexpected error");
   }
 
   // Ignores value, panics on error
   // Usage: result.ExpectOk("Something bad happens");
   void ExpectOk(const std::string& or_error,
                 SourceLocation where = SourceLocation::Current()) {
-    ExpectImpl(where, or_error);
+    ExpectOkImpl(where, or_error);
+  }
+
+  T& ExpectValue(SourceLocation where = SourceLocation::Current()) {
+    return ExpectValueImpl(where, "Unexpected error");
+  }
+
+  T& ExpectValueOr(const std::string& or_error,
+                 SourceLocation where = SourceLocation::Current()) {
+    return ExpectValueImpl(where, or_error);
   }
 
   void Ignore() {
@@ -303,11 +312,16 @@ class [[nodiscard]] Result {
     }
   }
 
-  void ExpectImpl(SourceLocation where, const std::string& or_error) {
+  void ExpectOkImpl(SourceLocation where, const std::string& or_error) {
     if (!IsOk()) {
       detail::Panic(where, StringBuilder()
                                << "Result::ExpectOk failed: " << or_error);
     }
+  }
+
+  T& ExpectValueImpl(SourceLocation where, const std::string& or_error) {
+    ExpectOkImpl(where, or_error);
+    return ValueUnsafe();
   }
 
  private:
