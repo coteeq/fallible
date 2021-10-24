@@ -10,7 +10,7 @@ namespace wheels {
 
 namespace detail {
 
-class Failure {
+class [[nodiscard]] Failure {
  public:
   explicit Failure(std::error_code& error_code) : error_(error_code) {
   }
