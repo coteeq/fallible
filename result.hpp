@@ -49,6 +49,14 @@ class ValueStorage {
     new (&storage_) T(that);
   }
 
+  T& RefUnsafe() {
+    return *PtrUnsafe();
+  }
+
+  const T& ConstRefUnsafe() const {
+    return *PtrUnsafe();
+  }
+
   T* PtrUnsafe() {
     return reinterpret_cast<T*>(&storage_);
   }
@@ -163,13 +171,26 @@ class [[nodiscard]] Result {
     ExpectOkImpl(where, or_error);
   }
 
-  T& ExpectValue(SourceLocation where = SourceLocation::Current()) {
-    return ExpectValueImpl(where, "Unexpected error");
+  T& ExpectValue(SourceLocation where = SourceLocation::Current())& {
+    ExpectOkImpl(where, "Unexpected error");
+    return value_.RefUnsafe();
+  }
+
+  T&& ExpectValue(SourceLocation where = SourceLocation::Current())&& {
+    ExpectOkImpl(where, "Unexpected error");
+    return std::move(value_.RefUnsafe());
   }
 
   T& ExpectValueOr(const std::string& or_error,
-                 SourceLocation where = SourceLocation::Current()) {
-    return ExpectValueImpl(where, or_error);
+                 SourceLocation where = SourceLocation::Current())& {
+    ExpectOkImpl(where, or_error);
+    return value_.RefUnsafe();
+  }
+
+  T&& ExpectValueOr(const std::string& or_error,
+                   SourceLocation where = SourceLocation::Current()) && {
+    ExpectOkImpl(where, or_error);
+    return std::move(value_.RefUnsafe());
   }
 
   void Ignore() {
@@ -195,12 +216,16 @@ class [[nodiscard]] Result {
   // Unsafe value getters, use only after IsOk
   // Behavior is undefined if Result does not contain a value
 
-  T& ValueUnsafe() {
-    return *value_.PtrUnsafe();
+  T& ValueUnsafe() & {
+    return value_.RefUnsafe();
   }
 
-  const T& ValueUnsafe() const {
-    return *value_.PtrUnsafe();
+  const T& ValueUnsafe() const & {
+    return value_.ConstRefUnsafe();
+  }
+
+  T&& ValueUnsafe() && {
+    return std::move(value_.RefUnsafe());
   }
 
   // Safe value getters
@@ -208,17 +233,17 @@ class [[nodiscard]] Result {
 
   T& ValueOrThrow()& {
     ThrowIfError();
-    return ValueUnsafe();
+    return value_.RefUnsafe();
   }
 
   const T& ValueOrThrow() const& {
     ThrowIfError();
-    return ValueUnsafe();
+    return value_.ConstRefUnsafe();
   }
 
   T&& ValueOrThrow()&& {
     ThrowIfError();
-    return std::move(ValueUnsafe());
+    return std::move(value_.RefUnsafe());
   }
 
   [[deprecated]] T& Value()& {
@@ -245,16 +270,16 @@ class [[nodiscard]] Result {
   // operator * overloads
   // Unsafe: behavior is undefined if Result does not contain a value
 
-  T& operator*()& {
-    return ValueUnsafe();
+  T& operator*() & {
+    return value_.RefUnsafe();
   }
 
-  const T& operator*() const& {
-    return ValueUnsafe();
+  const T& operator*() const & {
+    return value_.ConstRefUnsafe();
   }
 
-  T&& operator*()&& {
-    return std::move(ValueUnsafe());
+  T&& operator*() && {
+    return std::move(value_.RefUnsafe());
   }
 
   // operator -> overloads
@@ -317,11 +342,6 @@ class [[nodiscard]] Result {
       detail::Panic(where, StringBuilder()
                                << "Result::ExpectOk failed: " << or_error);
     }
-  }
-
-  T& ExpectValueImpl(SourceLocation where, const std::string& or_error) {
-    ExpectOkImpl(where, or_error);
-    return ValueUnsafe();
   }
 
  private:
