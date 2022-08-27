@@ -1,52 +1,81 @@
 #pragma once
 
-#include <wheels/support/assert.hpp>
+#include <nlohmann/json.hpp>
 
-#include <system_error>
-#include <exception>
-#include <variant>
+#include <wheels/support/source_location.hpp>
 
 namespace wheels {
 
+namespace detail {
+
+class ErrorBuilder;
+
+}  // namespace detail
+
+//////////////////////////////////////////////////////////////////////
+
 class Error {
+  using Json = nlohmann::json;
+
  public:
-  Error() : error_(std::monostate{}) {
+  int32_t GetCode() const;
+  std::string GetDomain() const;
+
+  bool HasReason() const;
+  std::string GetReason() const;
+
+  bool HasSourceLocation() const;
+  wheels::SourceLocation GetSourceLocation() const;
+
+  void AddSubError(Error&& that);
+  std::vector<Error> GetSubErrors() const;
+  Error GetSubError() const;
+
+  void AttachContext(std::string_view key, Json value);
+  bool HasContext() const;
+  Json GetContext() const;
+
+  Json AsJson() const {
+    return repr_;
   }
 
-  Error(std::exception_ptr e) : error_(std::move(e)) {
-  }
+  std::string Describe() const;
 
-  Error(std::error_code e) : error_(std::move(e)) {
-  }
+ private:
+  friend class detail::ErrorBuilder;
 
-  bool HasException() const {
-    return std::holds_alternative<std::exception_ptr>(error_);
-  }
-
-  bool HasErrorCode() const {
-    return std::holds_alternative<std::error_code>(error_);
-  }
-
-  bool HasError() const {
-    return HasException() || HasErrorCode();
-  }
-
-  std::error_code GetErrorCode() const {
-    WHEELS_VERIFY(HasErrorCode(), "Error code expected");
-    return std::get<std::error_code>(error_);
-  }
-
-  // HasErrorCode -> std::system_error
-  void ThrowIfError() const {
-    if (HasException()) {
-      std::rethrow_exception(std::get<std::exception_ptr>(error_));
-    } else if (HasErrorCode()) {
-      throw std::system_error(std::get<std::error_code>(error_));
-    }
+  Error(Json obj) : repr_(std::move(obj)) {
   }
 
  private:
-  std::variant<std::monostate, std::exception_ptr, std::error_code> error_;
+  Json repr_;
 };
+
+//////////////////////////////////////////////////////////////////////
+
+namespace detail {
+
+class [[nodiscard]] ErrorBuilder {
+  using Json = nlohmann::json;
+
+ public:
+  ErrorBuilder(int32_t code, SourceLocation loc);
+
+  ErrorBuilder& Domain(std::string name);
+  ErrorBuilder& Reason(std::string descr);
+  ErrorBuilder& AttachContext(std::string_view key, Json value);
+  ErrorBuilder& AddSubError(Error e);
+
+  Error Done();
+
+ private:
+  Json repr_;
+};
+
+}  // namespace detail
+
+inline detail::ErrorBuilder Err(int32_t code, SourceLocation loc = SourceLocation::Current()) {
+  return detail::ErrorBuilder(code, loc);
+}
 
 }  // namespace wheels

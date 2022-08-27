@@ -4,8 +4,12 @@
 #include <type_traits>
 #include <utility>
 
+#include <optional>
+#include <variant>
+
 #include <wheels/support/assert.hpp>
 #include <wheels/result/error.hpp>
+#include <wheels/result/throw.hpp>
 
 /* References
  *
@@ -137,7 +141,7 @@ class [[nodiscard]] Result {
   // Testing
 
   bool HasError() const {
-    return error_.HasError();
+    return error_.has_value();
   }
 
   bool IsOk() const {
@@ -155,7 +159,9 @@ class [[nodiscard]] Result {
   */
 
   void ThrowIfError() const {
-    error_.ThrowIfError();
+    if (error_) {
+      ThrowError(*error_);
+    }
   }
 
   // Ignores value, panics on error
@@ -198,17 +204,18 @@ class [[nodiscard]] Result {
   }
 
   // Error accessors
+  // Unsafe: behavior is undefined if result holds a value instead of an error
 
   bool MatchErrorCode(int expected) const {
-    return error_.GetErrorCode().value() == expected;
+    return GetErrorCode() == expected;
   }
 
   const Error& GetError() const {
-    return error_;
+    return *error_;
   }
 
-  std::error_code GetErrorCode() const {
-    return error_.GetErrorCode();
+  int32_t GetErrorCode() const {
+    return error_->GetCode();
   }
 
   // Value accessors
@@ -268,7 +275,7 @@ class [[nodiscard]] Result {
   }
 
   // operator * overloads
-  // Unsafe: behavior is undefined if Result does not contain a value
+  // Unsafe: behavior is undefined if this Result does not contain a value
 
   T& operator*() & {
     return value_.RefUnsafe();
@@ -313,7 +320,6 @@ class [[nodiscard]] Result {
   }
 
   Result(Error error) {
-    WHEELS_VERIFY(error.HasError(), "Expected non-empty error");
     error_ = std::move(error);
   }
 
@@ -340,13 +346,14 @@ class [[nodiscard]] Result {
   void ExpectOkImpl(SourceLocation where, const std::string& or_error) {
     if (!IsOk()) {
       detail::Panic(where, StringBuilder()
-                               << "Result::ExpectOk failed: " << or_error);
+                               << "Result::ExpectOk failed: " << or_error
+                               << " (" << error_->Describe() << ")");
     }
   }
 
  private:
   detail::ValueStorage<T> value_;
-  Error error_;
+  std::optional<Error> error_;
 };
 
 ////////////////////////////////////////////////////////////
@@ -369,7 +376,7 @@ class [[nodiscard]] Result<void> {
   // Testing
 
   bool HasError() const {
-    return error_.HasError();
+    return error_.has_value();
   }
 
   bool IsOk() const {
@@ -383,7 +390,9 @@ class [[nodiscard]] Result<void> {
   */
 
   void ThrowIfError() const {
-    error_.ThrowIfError();
+    if (error_) {
+      ThrowError(*error_);
+    }
   }
 
   // Ignores value, panics on error
@@ -407,35 +416,36 @@ class [[nodiscard]] Result<void> {
     ThrowIfError();
   }
 
+  // Unsafe
   const Error& GetError() const {
-    return error_;
+    return *error_;
   }
 
   bool MatchErrorCode(int expected) const {
-    return GetErrorCode().value() == expected;
+    return GetErrorCode() == expected;
   }
 
-  std::error_code GetErrorCode() const {
-    return error_.GetErrorCode();
+  int32_t GetErrorCode() const {
+    return error_->GetCode();
   }
 
  private:
   Result() = default;
 
   Result(Error error) {
-    WHEELS_VERIFY(error.HasError(), "Expected non-empty error");
     error_ = std::move(error);
   }
 
   void ExpectImpl(SourceLocation where, const std::string& or_error) {
     if (!IsOk()) {
       detail::Panic(where, StringBuilder()
-                               << "Status::ExpectOk failed: " << or_error);
+                               << "Status::ExpectOk failed: " << or_error
+                               << " (" << error_->Describe() << ")");
     }
   }
 
  private:
-  Error error_;
+  std::optional<Error> error_;
 };
 
 using Status = Result<void>;

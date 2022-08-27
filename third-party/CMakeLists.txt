@@ -17,3 +17,14 @@ FetchContent_Declare(
         GIT_TAG master
 )
 FetchContent_MakeAvailable(wheels)
+
+# --------------------------------------------------------------------
+
+# Json
+
+FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG master
+)
+FetchContent_MakeAvailable(nlohmann_json)

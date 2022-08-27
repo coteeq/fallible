@@ -1,8 +1,9 @@
 #pragma once
 
 #include <wheels/result/result.hpp>
+#include <wheels/result/error_codes.hpp>
 
-#include <wheels/support/function.hpp>
+#include <wheels/support/exception.hpp>
 
 namespace wheels {
 
@@ -12,13 +13,6 @@ namespace detail {
 
 class [[nodiscard]] Failure {
  public:
-  explicit Failure(std::error_code& error_code) : error_(error_code) {
-  }
-
-  explicit Failure(std::exception_ptr exception)
-      : error_(std::move(exception)) {
-  }
-
   explicit Failure(Error error) : error_(std::move(error)) {
   }
 
@@ -50,7 +44,11 @@ struct Invoker {
     try {
       return Result<R>::Ok(f(std::forward<Args>(args)...));
     } catch (...) {
-      return Result<R>::Fail({std::current_exception()});
+      return Result<R>::Fail(
+          Err(ErrorCodes::Unknown)
+              .Domain("Canonical")
+              .Reason(CurrentExceptionMessage())
+              .Done());
     }
   }
 };
@@ -63,7 +61,11 @@ struct Invoker<void> {
       f(std::forward<Args>(args)...);
       return Status::Ok();
     } catch (...) {
-      return Status::Fail({std::current_exception()});
+      return Status::Fail(
+          Err(ErrorCodes::Unknown)
+              .Domain("Canonical")
+              .Reason(CurrentExceptionMessage())
+              .Done());
     }
   }
 };
@@ -91,9 +93,6 @@ Result<T> Ok(const T& value) {
 
 // Usage: make_result::Ok()
 Status Ok();
-
-// Usage: make_result::Fail(error)
-detail::Failure Fail(std::error_code error);
 
 detail::Failure Fail(Error error);
 
@@ -135,15 +134,15 @@ auto Invoke(F&& f, Args&&... args) {
                                     std::forward<Args>(args)...);
 }
 
-// Make result with exception
-template <typename E, typename... Args>
-detail::Failure Throw(Args&&... args) {
-  try {
-    throw E(std::forward<Args>(args)...);
-  } catch (const E& e) {
-    return detail::Failure{std::current_exception()};
-  }
-}
+//// Make result with exception
+//template <typename E, typename... Args>
+//detail::Failure Throw(Args&&... args) {
+//  try {
+//    throw E(std::forward<Args>(args)...);
+//  } catch (const E& e) {
+//    return detail::Failure{std::current_exception()};
+//  }
+//}
 
 // Produce std::errc::not_supported error
 // For tests
