@@ -94,10 +94,6 @@ class [[nodiscard]] Result {
     return !IsOk();
   }
 
-  [[deprecated]] bool HasValue() const {
-    return !HasError();
-  }
-
   /* Intentionally disabled
   explicit operator bool() const {
     return IsOk();

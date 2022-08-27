@@ -317,7 +317,7 @@ TEST_SUITE(Result) {
       };
 
       auto result = make_result::Invoke(good);
-      ASSERT_TRUE(result.HasValue());
+      ASSERT_TRUE(result.IsOk());
       ASSERT_EQ(*result, 42);
     }
 
