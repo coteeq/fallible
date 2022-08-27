@@ -51,8 +51,9 @@ SourceLocation Error::GetSourceLocation() const {
   return SourceLocationFromJson(repr_["where"]);
 }
 
-void Error::AttachContext(std::string_view key, Json value) {
+Error& Error::AttachContext(std::string_view key, Json value) {
   repr_["ctx"][key] = value;
+  return *this;
 }
 
 bool Error::HasContext() const {
@@ -65,8 +66,9 @@ nlohmann::json Error::GetContext() const {
 
 // Sub-errors
 
-void Error::AddSubError(Error&& that) {
+Error& Error::AddSubError(Error&& that) {
   repr_["sub_errors"].push_back(std::move(that.repr_));
+  return *this;
 }
 
 std::vector<Error> Error::GetSubErrors() const {

@@ -21,11 +21,11 @@ class Error {
   bool HasSourceLocation() const;
   wheels::SourceLocation GetSourceLocation() const;
 
-  void AddSubError(Error&& that);
+  Error& AddSubError(Error&& that);
   std::vector<Error> GetSubErrors() const;
   Error GetSubError() const;
 
-  void AttachContext(std::string_view key, Json value);
+  Error& AttachContext(std::string_view key, Json value);
   bool HasContext() const;
   Json GetContext() const;
 
