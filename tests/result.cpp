@@ -5,6 +5,7 @@
 
 using wheels::Error;
 using wheels::ErrorCodes;
+using wheels::Err;
 
 using wheels::Result;
 using wheels::Status;
@@ -14,7 +15,7 @@ namespace make_result = wheels::make_result;
 ////////////////////////////////////////////////////////////////////////////////
 
 static Error TimedOut() {
-  return Error::Make(ErrorCodes::TimedOut, "Operation timed out");
+  return Err(ErrorCodes::TimedOut).Reason("Operation timed out").Done();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +38,7 @@ class TestClass {
 
   TestClass(TestClass&& that)
       : message_(std::move(that.message_)) {
+    ++object_count_;
   }
 
   TestClass& operator =(TestClass&& that) {
@@ -107,6 +109,7 @@ TEST_SUITE(Result) {
   SIMPLE_TEST(ObjectCount) {
     {
       auto result = Result<TestClass>::Ok("Hi");
+      std::cout << TestClass::ObjectCount() << std::endl;
       ASSERT_EQ(TestClass::ObjectCount(), 1);
     }
     ASSERT_EQ(TestClass::ObjectCount(), 0);
@@ -155,13 +158,17 @@ TEST_SUITE(Result) {
   SIMPLE_TEST(Move) {
     auto result_1 = Result<TestClass>::Ok("Hello");
     auto result_2 = std::move(result_1);
-    ASSERT_EQ(result_2.ValueOrThrow().Message(), "Hello");
+
+    ASSERT_EQ(result_2->Message(), "Hello");
+    ASSERT_EQ(result_1->Message(), "");
   }
 
   SIMPLE_TEST(Copy) {
     auto result_1 = Result<TestClass>::Ok("Hello");
     Result<TestClass> result_2 = result_1;
-    ASSERT_EQ(result_1.ValueOrThrow().Message(), "Hello");
+
+    ASSERT_EQ(result_1->Message(), "Hello");
+    ASSERT_EQ(result_2->Message(), "Hello");
   }
 
   SIMPLE_TEST(AccessMethods) {

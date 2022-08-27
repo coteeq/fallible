@@ -1,5 +1,5 @@
-#include <wheels/result/error.hpp>
-#include <wheels/result/error_codes.hpp>
+#include <wheels/error/error.hpp>
+#include <wheels/error/codes.hpp>
 
 #include <wheels/test/test_framework.hpp>
 
@@ -7,13 +7,17 @@
 
 using wheels::Error;
 using wheels::ErrorCodes;
+using wheels::Err;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 // Test helpers
 
 static Error TimedOut(wheels::SourceLocation loc = wheels::SourceLocation::Current()) {
-  return Error::Make(ErrorCodes::TimedOut, "Operation timed out", loc);
+  return Err(ErrorCodes::TimedOut, loc)
+      .Domain("Canonical")
+      .Reason("Operation timed out")
+      .Done();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,9 +31,14 @@ TEST_SUITE(Error) {
   }
 
   SIMPLE_TEST(SubErrors) {
-    Error error = Error::Make(ErrorCodes::Internal, "Internal service error");
+    Error error = Err(ErrorCodes::Internal)
+                      .Reason("Internal service error")
+                      .Done();
+
     error.AddSubError(
-      Error::Make(123, "Transaction aborted"));
+      Err(123)
+            .Reason("Transaction aborted")
+            .Done());
 
     std::cout << error.AsJson().dump(1, ' ') << std::endl;
 

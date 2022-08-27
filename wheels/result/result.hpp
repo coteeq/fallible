@@ -5,12 +5,8 @@
 
 #include <wheels/support/assert.hpp>
 
-// aligned_storage lives here
-#include <type_traits>
-#include <utility>
-
 #include <optional>
-#include <variant>
+#include <utility>
 
 /* References
  *
@@ -33,55 +29,6 @@ namespace wheels {
 
 ////////////////////////////////////////////////////////////
 
-namespace detail {
-
-// Low-level storage for value
-template <typename T>
-class ValueStorage {
-  using Storage = typename std::aligned_storage<sizeof(T), alignof(T)>::type;
-
- public:
-  template <typename... Arguments>
-  void Construct(Arguments&&... arguments) {
-    new (&storage_) T(std::forward<Arguments>(arguments)...);
-  }
-
-  void MoveConstruct(T&& that) {
-    new (&storage_) T(std::move(that));
-  }
-
-  void CopyConstruct(const T& that) {
-    new (&storage_) T(that);
-  }
-
-  T& RefUnsafe() {
-    return *PtrUnsafe();
-  }
-
-  const T& ConstRefUnsafe() const {
-    return *PtrUnsafe();
-  }
-
-  T* PtrUnsafe() {
-    return reinterpret_cast<T*>(&storage_);
-  }
-
-  const T* PtrUnsafe() const {
-    return reinterpret_cast<const T*>(&storage_);
-  }
-
-  void Destroy() {
-    PtrUnsafe()->~T();
-  }
-
- private:
-  Storage storage_;
-};
-
-}  // namespace detail
-
-////////////////////////////////////////////////////////////
-
 // Result = Value | Error
 
 template <typename T>
@@ -96,9 +43,8 @@ class [[nodiscard]] Result {
 
   template <typename... Arguments>
   static Result Ok(Arguments && ... arguments) {
-    Result result;
-    result.value_.Construct(std::forward<Arguments>(arguments)...);
-    return result;
+    // TODO
+    return Result(T(std::forward<Arguments>(arguments)...));
   }
 
   static Result Ok(T && value) {
@@ -111,12 +57,12 @@ class [[nodiscard]] Result {
 
   // Moving
 
-  Result(Result && that) {
+  Result(Result&& that) {
     MoveImpl(std::move(that));
   }
 
   Result& operator=(Result&& that) {
-    DestroyValueIfExist();
+    Destroy();
     MoveImpl(std::move(that));
     return *this;
   }
@@ -128,28 +74,27 @@ class [[nodiscard]] Result {
   }
 
   Result& operator=(const Result& that) {
-    DestroyValueIfExist();
+    Destroy();
     CopyImpl(that);
-    return *this;
   }
 
   // Dtor
 
   ~Result() {
-    DestroyValueIfExist();
+    Destroy();
   }
 
   // Testing
 
-  bool HasError() const {
-    return error_.has_value();
-  }
-
   bool IsOk() const {
-    return !HasError();
+    return has_value_;
   }
 
-  bool HasValue() const {
+  bool HasError() const {
+    return !IsOk();
+  }
+
+  [[deprecated]] bool HasValue() const {
     return !HasError();
   }
 
@@ -160,8 +105,8 @@ class [[nodiscard]] Result {
   */
 
   void ThrowIfError() const {
-    if (error_) {
-      ThrowError(*error_);
+    if (!has_value_) {
+      ThrowError(error_);
     }
   }
 
@@ -180,24 +125,24 @@ class [[nodiscard]] Result {
 
   T& ExpectValue(SourceLocation where = SourceLocation::Current())& {
     ExpectOkImpl(where, "Unexpected error");
-    return value_.RefUnsafe();
+    return value_;
   }
 
   T&& ExpectValue(SourceLocation where = SourceLocation::Current())&& {
     ExpectOkImpl(where, "Unexpected error");
-    return std::move(value_.RefUnsafe());
+    return std::move(value_);
   }
 
   T& ExpectValueOr(const std::string& or_error,
                  SourceLocation where = SourceLocation::Current())& {
     ExpectOkImpl(where, or_error);
-    return value_.RefUnsafe();
+    return value_;
   }
 
   T&& ExpectValueOr(const std::string& or_error,
                    SourceLocation where = SourceLocation::Current()) && {
     ExpectOkImpl(where, or_error);
-    return std::move(value_.RefUnsafe());
+    return std::move(value_);
   }
 
   void Ignore() {
@@ -212,11 +157,11 @@ class [[nodiscard]] Result {
   }
 
   const Error& GetError() const {
-    return *error_;
+    return error_;
   }
 
   int32_t GetErrorCode() const {
-    return error_->GetCode();
+    return error_.GetCode();
   }
 
   // Value accessors
@@ -225,15 +170,15 @@ class [[nodiscard]] Result {
   // Behavior is undefined if Result does not contain a value
 
   T& ValueUnsafe() & {
-    return value_.RefUnsafe();
+    return value_;
   }
 
   const T& ValueUnsafe() const & {
-    return value_.ConstRefUnsafe();
+    return value_;
   }
 
   T&& ValueUnsafe() && {
-    return std::move(value_.RefUnsafe());
+    return std::move(value_);
   }
 
   // Safe value getters
@@ -241,32 +186,17 @@ class [[nodiscard]] Result {
 
   T& ValueOrThrow()& {
     ThrowIfError();
-    return value_.RefUnsafe();
+    return value_;
   }
 
   const T& ValueOrThrow() const& {
     ThrowIfError();
-    return value_.ConstRefUnsafe();
+    return value_;
   }
 
   T&& ValueOrThrow()&& {
     ThrowIfError();
-    return std::move(value_.RefUnsafe());
-  }
-
-  [[deprecated]] T& Value()& {
-    ThrowIfError();
-    return ValueUnsafe();
-  }
-
-  [[deprecated]] const T& Value() const& {
-    ThrowIfError();
-    return ValueUnsafe();
-  }
-
-  [[deprecated]] T&& Value()&& {
-    ThrowIfError();
-    return std::move(ValueUnsafe());
+    return std::move(value_);
   }
 
   // For templates:
@@ -279,68 +209,74 @@ class [[nodiscard]] Result {
   // Unsafe: behavior is undefined if this Result does not contain a value
 
   T& operator*() & {
-    return value_.RefUnsafe();
+    return value_;
   }
 
   const T& operator*() const & {
-    return value_.ConstRefUnsafe();
+    return value_;
   }
 
   T&& operator*() && {
-    return std::move(value_.RefUnsafe());
+    return std::move(value_);
   }
 
   // operator -> overloads
   // Unsafe: behavior is undefined if Result does not contain a value
 
   T* operator->() {
-    return value_.PtrUnsafe();
+    return &value_;
   }
 
   const T* operator->() const {
-    return value_.PtrUnsafe();
+    return &value_;
   }
 
   // Unwrap rvalue Result automatically
   // Do we need this?
 
   operator T &&()&& {
-    return std::move(ValueOrThrow());
+    return std::move(value_);
   }
 
  private:
-  Result() {
+  Result(T && value)
+      : has_value_(true),
+        value_(std::move(value)) {
   }
 
-  Result(T && value) {
-    value_.MoveConstruct(std::move(value));
+  Result(const T& value)
+    : has_value_(true),
+      value_(value) {
   }
 
-  Result(const T& value) {
-    value_.CopyConstruct(value);
+  Result(Error error)
+      : has_value_(false),
+        error_(std::move(error)) {
   }
 
-  Result(Error error) {
-    error_ = std::move(error);
-  }
-
-  void MoveImpl(Result && that) {
-    error_ = std::move(that.error_);
-    if (that.HasValue()) {
-      value_.MoveConstruct(std::move(that.ValueUnsafe()));
+  void MoveImpl(Result&& that) {
+    has_value_ = that.has_value_;
+    if (has_value_) {
+      new (&value_) T(std::move(that.value_));
+    } else {
+      new (&error_) Error(std::move(that.error_));
     }
   }
 
   void CopyImpl(const Result& that) {
-    error_ = that.error_;
-    if (that.HasValue()) {
-      value_.CopyConstruct(that.ValueUnsafe());
+    has_value_ = that.has_value_;
+    if (has_value_) {
+      new (&value_) T(that.value_);
+    } else {
+      new (&error_) Error(that.error_);
     }
   }
 
-  void DestroyValueIfExist() {
-    if (IsOk()) {
-      value_.Destroy();
+  void Destroy() {
+    if (has_value_) {
+      value_.~T();
+    } else {
+      error_.~Error();
     }
   }
 
@@ -348,13 +284,16 @@ class [[nodiscard]] Result {
     if (!IsOk()) {
       detail::Panic(where, StringBuilder()
                                << "Result::ExpectOk failed: " << or_error
-                               << " (" << error_->Describe() << ")");
+                               << " (" << error_.Describe() << ")");
     }
   }
 
  private:
-  detail::ValueStorage<T> value_;
-  std::optional<Error> error_;
+  bool has_value_;
+  union {
+    T value_;
+    Error error_;
+  };
 };
 
 ////////////////////////////////////////////////////////////
