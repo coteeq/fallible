@@ -1,4 +1,4 @@
-#include <wheels/result/error.hpp>
+#include <wheels/error/error.hpp>
 
 #include <wheels/support/assert.hpp>
 

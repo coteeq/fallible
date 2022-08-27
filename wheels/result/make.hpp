@@ -1,7 +1,7 @@
 #pragma once
 
 #include <wheels/result/result.hpp>
-#include <wheels/result/error_codes.hpp>
+#include <wheels/error/codes.hpp>
 
 #include <wheels/support/exception.hpp>
 

@@ -1,7 +1,8 @@
 add_library(wheels-result
-		result/error_codes.hpp
-		result/error.hpp
-		result/error.cpp
+		error/codes.hpp
+		error/error.hpp
+		error/error.cpp
+		error/throw.hpp
 		result/result.hpp
 		result/make.hpp
 		result/make.cpp

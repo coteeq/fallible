@@ -1,6 +1,6 @@
 #pragma once
 
-#include <wheels/result/error.hpp>
+#include <wheels/error/error.hpp>
 
 namespace wheels {
 

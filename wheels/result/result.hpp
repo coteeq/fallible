@@ -1,15 +1,16 @@
 #pragma once
 
+#include <wheels/error/error.hpp>
+#include <wheels/error/throw.hpp>
+
+#include <wheels/support/assert.hpp>
+
 // aligned_storage lives here
 #include <type_traits>
 #include <utility>
 
 #include <optional>
 #include <variant>
-
-#include <wheels/support/assert.hpp>
-#include <wheels/result/error.hpp>
-#include <wheels/result/throw.hpp>
 
 /* References
  *

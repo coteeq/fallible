@@ -1,6 +1,6 @@
 #include <wheels/result/make.hpp>
 
-#include <wheels/result/error_codes.hpp>
+#include <wheels/error/codes.hpp>
 
 namespace wheels {
 
