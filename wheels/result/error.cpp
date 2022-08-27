@@ -132,7 +132,7 @@ ErrorBuilder& ErrorBuilder::AttachContext(std::string_view key, nlohmann::json v
 }
 
 Error ErrorBuilder::Done() {
-  return Error(std::move(repr_));
+  return Error::FromRepr(std::move(repr_));
 }
 
 }  // namespace detail

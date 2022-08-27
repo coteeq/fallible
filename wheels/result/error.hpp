@@ -6,12 +6,6 @@
 
 namespace wheels {
 
-namespace detail {
-
-class ErrorBuilder;
-
-}  // namespace detail
-
 //////////////////////////////////////////////////////////////////////
 
 class Error {
@@ -41,9 +35,11 @@ class Error {
 
   std::string Describe() const;
 
- private:
-  friend class detail::ErrorBuilder;
+  static Error FromRepr(Json repr) {
+    return {std::move(repr)};
+  }
 
+ private:
   Error(Json obj) : repr_(std::move(obj)) {
   }
 
