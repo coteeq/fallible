@@ -10,17 +10,24 @@ namespace wheels {
 
 namespace {
 
-nlohmann::json SourceLocationToJson(SourceLocation loc) {
+nlohmann::json SourceLocationToJson(const SourceLocation& loc) {
+  // clang-format off
   return {
-      {"file", loc.file_}, {"function", loc.function_}, {"line", loc.line_}};
+      {"file", loc.File()},
+      {"function", loc.Function()},
+      {"line", loc.Line()}
+  };
+  // clang-format on
 }
 
 SourceLocation SourceLocationFromJson(const nlohmann::json& json) {
+  // clang-format off
   return {
       json["file"].get<std::string>(),
       json["function"].get<std::string>(),
       json["line"].get<int>(),
   };
+  // clang-format on
 }
 
 }  // namespace
