@@ -4,6 +4,7 @@
 #include <wheels/error/codes.hpp>
 
 #include <wheels/support/exception.hpp>
+#include <wheels/support/unit.hpp>
 
 namespace wheels {
 
@@ -54,6 +55,10 @@ Result<T> Ok(const T& value) {
 
 // Usage: make_result::Ok()
 Status Ok();
+
+inline Result<wheels::Unit> OkUnit() {
+  return Result<wheels::Unit>::Ok({});
+}
 
 detail::Failure Fail(Error error);
 
