@@ -30,12 +30,13 @@ Result<std::string> Bar() {
           .Done());
 }
 
-Result<size_t> Baz() {
+Result<int> Baz() {
   auto result = Bar();
-  if (!result.IsOk()) {
-    return PropagateError(result);
+  if (result.IsOk()) {
+    return Ok(7);
   } else {
-    return Ok((*result).length());
+    // Automagically adapts to different value type
+    return PropagateError(result);
   }
 }
 
@@ -46,10 +47,11 @@ int main() {
             << Foo().ExpectValueOr("Fail miserably")  // Success
             << std::endl;
 
-  Bar();  // Compiler warning (or error with -werror flag)
+  Bar();  // Compiler warning (or error with -werror flag): Result ignored
 
-  Bar().Ignore();  // Supress compiler warning
+  Bar().Ignore();  // Intentionally suppress compiler warning
 
+  // #4
   {
     auto result = Bar();
 
@@ -58,7 +60,6 @@ int main() {
       // Behavior is undefined if result holds an error instead of a value
       std::cout << "Bar() -> " << *result << std::endl;
     } else {
-      // Access error
       auto error = result.GetError();
       // Or use error.GetCode(), error.GetReason() etc
       std::cout << "Bar() -> " << error.AsJson().dump(1, ' ') << std::endl;
