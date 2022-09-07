@@ -4,7 +4,7 @@
 
 namespace wheels {
 
-namespace make_result {
+namespace result {
 
 Status Ok() {
   return Status::Ok();
@@ -33,6 +33,6 @@ detail::Failure NotSupported() {
                   .Done());
 }
 
-}  // namespace make_result
+}  // namespace result
 
 }  // namespace wheels

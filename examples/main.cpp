@@ -12,9 +12,9 @@ using wheels::Result;
 using wheels::Err;
 
 // Result constructors
-using wheels::make_result::Ok;
-using wheels::make_result::PropagateError;
-using wheels::make_result::Fail;
+using wheels::result::Ok;
+using wheels::result::PropagateError;
+using wheels::result::Fail;
 
 //////////////////////////////////////////////////////////////////////
 

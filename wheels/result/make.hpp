@@ -35,7 +35,7 @@ class [[nodiscard]] Failure {
 
 ////////////////////////////////////////////////////////////
 
-namespace make_result {
+namespace result {
 
 template <typename T>
 Result<T> Ok(T&& value) {
@@ -91,6 +91,6 @@ Status JustStatus(const Result<T>& result) {
 // For tests
 detail::Failure NotSupported();
 
-}  // namespace make_result
+}  // namespace result
 
 }  // namespace wheels

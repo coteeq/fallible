@@ -10,7 +10,7 @@ using wheels::Err;
 using wheels::Result;
 using wheels::Status;
 
-namespace make_result = wheels::make_result;
+namespace result = wheels::result;
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -76,11 +76,11 @@ Result<std::vector<int>> MakeVector(size_t size) {
   for (size_t i = 0; i < size; ++i) {
     ints.push_back(i);
   }
-  return make_result::Ok(std::move(ints));
+  return result::Ok(std::move(ints));
 }
 
 Result<std::string> MakeError() {
-  return make_result::Fail(TimedOut());
+  return result::Fail(TimedOut());
 }
 
 wheels::Status MakeOkStatus() {
@@ -108,7 +108,7 @@ TEST_SUITE(Result) {
 
   SIMPLE_TEST(ObjectCount) {
     {
-      auto result = make_result::Ok<TestClass>({"Hi"});
+      auto result = result::Ok<TestClass>({"Hi"});
       std::cout << TestClass::ObjectCount() << std::endl;
       ASSERT_EQ(TestClass::ObjectCount(), 1);
     }
@@ -151,12 +151,12 @@ TEST_SUITE(Result) {
   }
 
   SIMPLE_TEST(MatchErrorCode) {
-    Result<void> result = make_result::Fail(TimedOut());
+    Result<void> result = result::Fail(TimedOut());
     ASSERT_TRUE(result.MatchErrorCode(ErrorCodes::TimedOut));
   }
 
   SIMPLE_TEST(Move) {
-    auto result_1 = make_result::Ok<TestClass>({"Hello"});
+    auto result_1 = result::Ok<TestClass>({"Hello"});
     auto result_2 = std::move(result_1);
 
     ASSERT_EQ(result_2->Message(), "Hello");
@@ -164,7 +164,7 @@ TEST_SUITE(Result) {
   }
 
   SIMPLE_TEST(Copy) {
-    auto result_1 = make_result::Ok<TestClass>({"Hello"});
+    auto result_1 = result::Ok<TestClass>({"Hello"});
     Result<TestClass> result_2 = result_1;
 
     ASSERT_EQ(result_1->Message(), "Hello");
@@ -172,7 +172,7 @@ TEST_SUITE(Result) {
   }
 
   SIMPLE_TEST(AccessMethods) {
-    auto result = make_result::Ok<TestClass>({"Hello"});
+    auto result = result::Ok<TestClass>({"Hello"});
     ASSERT_EQ(result->Message(), "Hello");
     
     const TestClass& test = *result;
@@ -241,29 +241,29 @@ TEST_SUITE(Result) {
   }
 
   SIMPLE_TEST(MakeOkResult) {
-    auto ok = make_result::Ok();
+    auto ok = result::Ok();
     ASSERT_TRUE(ok.IsOk());
 
     const size_t answer = 4;
-    Result<size_t> result = make_result::Ok(answer);
+    Result<size_t> result = result::Ok(answer);
   }
 
   SIMPLE_TEST(MakeErrorResult) {
-    Result<std::string> response = make_result::Fail(TimedOut());
+    Result<std::string> response = result::Fail(TimedOut());
     ASSERT_FALSE(response.IsOk());
 
-    Result<std::vector<std::string>> lines = make_result::PropagateError(response);
+    Result<std::vector<std::string>> lines = result::PropagateError(response);
     ASSERT_FALSE(lines.IsOk());
   }
 
 //  SIMPLE_TEST(MakeResultStatus) {
-//    auto result = make_result::ToStatus(TimedOut());
+//    auto result = result::ToStatus(TimedOut());
 //    ASSERT_FALSE(result.IsOk());
 //    ASSERT_TRUE(result.HasError());
 //  }
 
   Result<int> IntResult(int value) {
-    return make_result::Ok(value);
+    return result::Ok(value);
   }
 
   /*
@@ -281,11 +281,11 @@ TEST_SUITE(Result) {
 
   SIMPLE_TEST(JustStatus) {
     auto answer = Result<int>::Ok(42);
-    auto ok = make_result::JustStatus(answer);
+    auto ok = result::JustStatus(answer);
     ASSERT_TRUE(ok.IsOk());
 
     auto response = Result<std::string>::Fail(TimedOut());
-    auto fail = make_result::JustStatus(response);
+    auto fail = result::JustStatus(response);
     ASSERT_FALSE(fail.IsOk());
   }
 
@@ -293,9 +293,9 @@ TEST_SUITE(Result) {
 //    auto bad = []() -> Result<std::string> {
 //      try {
 //        throw std::runtime_error("Bad");
-//        return make_result::Ok<std::string>("Good");
+//        return result::Ok<std::string>("Good");
 //      } catch (...) {
-//        return make_result::CurrentException();
+//        return result::CurrentException();
 //      }
 //    };
 //
@@ -313,7 +313,7 @@ TEST_SUITE(Result) {
 
 
 //  SIMPLE_TEST(Throw) {
-//    Result<int> result = make_result::Throw<std::runtime_error>("Test error");
+//    Result<int> result = result::Throw<std::runtime_error>("Test error");
 //
 //    ASSERT_TRUE(result.HasError());
 //    ASSERT_THROW(result.ThrowIfError(), std::runtime_error);
@@ -346,12 +346,12 @@ TEST_SUITE(Result) {
   }
 
   SIMPLE_TEST(ConstResultValue) {
-    const Result<int> result = make_result::Ok(42);
+    const Result<int> result = result::Ok(42);
     ASSERT_EQ(result.ValueOrThrow(), 42);
   }
 
   SIMPLE_TEST(NotSupported) {
-    Result<int> result = make_result::NotSupported();
+    Result<int> result = result::NotSupported();
 
     ASSERT_TRUE(result.HasError());
     ASSERT_TRUE(result.MatchErrorCode(ErrorCodes::NotSupported));
