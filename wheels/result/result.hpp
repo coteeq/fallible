@@ -222,11 +222,10 @@ class [[nodiscard]] Result {
   }
 
   // Unwrap rvalue Result automatically
-  // Do we need this?
 
-  operator T &&()&& {
-    return std::move(value_);
-  }
+//  operator T &&()&& {
+//    return std::move(value_);
+//  }
 
  private:
   Result(T && value)

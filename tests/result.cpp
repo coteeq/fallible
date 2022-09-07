@@ -199,22 +199,6 @@ TEST_SUITE(Result) {
     ASSERT_EQ(err_result.GetErrorCode(), ErrorCodes::TimedOut);
   }
 
-  SIMPLE_TEST(AutomaticallyUnwrapRvalue) {
-    std::vector<int> ints = MakeVector(3);
-    ASSERT_EQ(ints.size(), 3u);
-    
-    auto result_1 = MakeVector(4);
-    ints = std::move(result_1);
-    ASSERT_EQ(ints.size(), 4u);
-    
-    auto result_2 = MakeVector(5);
-    // Does not compiled
-    // ints = result_2;
-    
-    //std::string str;
-    //ASSERT_THROW(str = MakeError(), std::system_error);
-  }
-
   SIMPLE_TEST(ExpectOk) {
     {
       Result<std::vector<int>> result = MakeVector(3);
