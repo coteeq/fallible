@@ -24,50 +24,11 @@ class [[nodiscard]] Failure {
 
   template <typename T>
   operator Result<T>() {
-    return Result<T>::Fail(error_);
+    return Result<T>::Fail(std::move(error_));
   }
 
  private:
   Error error_;
-};
-
-}  // namespace detail
-
-////////////////////////////////////////////////////////////
-
-namespace detail {
-
-template <typename R>
-struct Invoker {
-  template <typename F, typename... Args>
-  static Result<R> Invoke(F&& f, Args&&... args) {
-    try {
-      return Result<R>::Ok(f(std::forward<Args>(args)...));
-    } catch (...) {
-      return Result<R>::Fail(
-          Err(ErrorCodes::Unknown)
-              .Domain("Canonical")
-              .Reason(CurrentExceptionMessage())
-              .Done());
-    }
-  }
-};
-
-template <>
-struct Invoker<void> {
-  template <typename F, typename... Args>
-  static Status Invoke(F&& f, Args&&... args) {
-    try {
-      f(std::forward<Args>(args)...);
-      return Status::Ok();
-    } catch (...) {
-      return Status::Fail(
-          Err(ErrorCodes::Unknown)
-              .Domain("Canonical")
-              .Reason(CurrentExceptionMessage())
-              .Done());
-    }
-  }
 };
 
 }  // namespace detail
@@ -127,24 +88,6 @@ Status JustStatus(const Result<T>& result) {
   }
 }
 
-template <typename F, typename... Args>
-auto Invoke(F&& f, Args&&... args) {
-  using R = decltype(f(std::forward<Args>(args)...));
-  return detail::Invoker<R>::Invoke(std::forward<F>(f),
-                                    std::forward<Args>(args)...);
-}
-
-//// Make result with exception
-//template <typename E, typename... Args>
-//detail::Failure Throw(Args&&... args) {
-//  try {
-//    throw E(std::forward<Args>(args)...);
-//  } catch (const E& e) {
-//    return detail::Failure{std::current_exception()};
-//  }
-//}
-
-// Produce std::errc::not_supported error
 // For tests
 detail::Failure NotSupported();
 

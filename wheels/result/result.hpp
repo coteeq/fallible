@@ -41,13 +41,7 @@ class [[nodiscard]] Result {
 
   // Static constructors
 
-  template <typename... Arguments>
-  static Result Ok(Arguments && ... arguments) {
-    // TODO
-    return Result(T(std::forward<Arguments>(arguments)...));
-  }
-
-  static Result Ok(T && value) {
+  static Result Ok(T value) {
     return Result(std::move(value));
   }
 

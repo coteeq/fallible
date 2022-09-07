@@ -108,7 +108,7 @@ TEST_SUITE(Result) {
 
   SIMPLE_TEST(ObjectCount) {
     {
-      auto result = Result<TestClass>::Ok("Hi");
+      auto result = make_result::Ok<TestClass>({"Hi"});
       std::cout << TestClass::ObjectCount() << std::endl;
       ASSERT_EQ(TestClass::ObjectCount(), 1);
     }
@@ -156,7 +156,7 @@ TEST_SUITE(Result) {
   }
 
   SIMPLE_TEST(Move) {
-    auto result_1 = Result<TestClass>::Ok("Hello");
+    auto result_1 = make_result::Ok<TestClass>({"Hello"});
     auto result_2 = std::move(result_1);
 
     ASSERT_EQ(result_2->Message(), "Hello");
@@ -164,7 +164,7 @@ TEST_SUITE(Result) {
   }
 
   SIMPLE_TEST(Copy) {
-    auto result_1 = Result<TestClass>::Ok("Hello");
+    auto result_1 = make_result::Ok<TestClass>({"Hello"});
     Result<TestClass> result_2 = result_1;
 
     ASSERT_EQ(result_1->Message(), "Hello");
@@ -172,7 +172,7 @@ TEST_SUITE(Result) {
   }
 
   SIMPLE_TEST(AccessMethods) {
-    auto result = Result<TestClass>::Ok("Hello");
+    auto result = make_result::Ok<TestClass>({"Hello"});
     ASSERT_EQ(result->Message(), "Hello");
     
     const TestClass& test = *result;
@@ -310,42 +310,7 @@ TEST_SUITE(Result) {
 //    ASSERT_THROW(result.ThrowIfError(), std::runtime_error);
 //  }
 
-  SIMPLE_TEST(Invoke) {
-    {
-      auto good = []() -> int {
-        return 42;
-      };
 
-      auto result = make_result::Invoke(good);
-      ASSERT_TRUE(result.IsOk());
-      ASSERT_EQ(*result, 42);
-    }
-
-    {
-      auto bad = []() -> int {
-        throw std::runtime_error("just test");
-      };
-
-      auto result = make_result::Invoke(bad);
-      ASSERT_TRUE(result.HasError());
-    }
-  }
-
-  SIMPLE_TEST(InvokeWithArguments) {
-    auto sum = [](int x, int y) { return x + y; };
-    auto result = make_result::Invoke(sum, 1, 2);
-    ASSERT_EQ(*result, 3);
-  }
-
-  SIMPLE_TEST(InvokeVoid) {
-    bool done = false;
-    auto work = [&]() {
-      done = true;
-    };
-    Status status = make_result::Invoke(work);
-    ASSERT_TRUE(status.IsOk());
-    ASSERT_TRUE(done);
-  }
 
 //  SIMPLE_TEST(Throw) {
 //    Result<int> result = make_result::Throw<std::runtime_error>("Test error");
@@ -378,15 +343,6 @@ TEST_SUITE(Result) {
       MoveOnly v = Result<MoveOnly>::Ok(17).ExpectValueOr("Fail");
       ASSERT_EQ(v.data, 17);
     }
-  }
-
-  SIMPLE_TEST(InvokeMoveOnlyArguments) {
-    auto foo = [](MoveOnly mo) {
-      return MoveOnly(mo.data + 1);
-    };
-
-    auto result = make_result::Invoke(foo, MoveOnly(3));
-    ASSERT_EQ(result->data, 4);
   }
 
   SIMPLE_TEST(ConstResultValue) {
