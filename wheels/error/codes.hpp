@@ -2,9 +2,11 @@
 
 namespace wheels {
 
+//////////////////////////////////////////////////////////////////////
+
 // Canonical error codes
 
-// TODO: Support error domains
+//////////////////////////////////////////////////////////////////////
 
 struct ErrorCodes {
   enum _ {
@@ -20,6 +22,7 @@ struct ErrorCodes {
     Unauthorized = 9,
     Internal = 10,
     NotSupported = 11,
+    Unavailable = 12,
   };
 };
 
