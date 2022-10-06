@@ -1,4 +1,5 @@
 #include <wheels/error/error.hpp>
+#include <wheels/error/codes.hpp>
 
 #include <wheels/support/assert.hpp>
 
@@ -100,6 +101,7 @@ Error Error::GetSubError() const {
 std::string Error::Describe() const {
   std::stringstream out;
   out << "code = " << GetCode()
+      << " (" << ErrorCodeName(GetCode()) << ")"
       << ", domain = " << GetDomain()
       << ", reason = '" << GetReason() << "'"
       << ", origin = " << GetSourceLocation();
