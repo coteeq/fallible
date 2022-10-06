@@ -6,6 +6,9 @@ namespace wheels {
 
 // Canonical error codes
 
+// https://abseil.io/docs/cpp/guides/status-codes
+// https://abseil.io/docs/cpp/guides/status#canonical_errors
+
 //////////////////////////////////////////////////////////////////////
 
 struct ErrorCodes {
@@ -20,9 +23,10 @@ struct ErrorCodes {
     NotFound = 7,
     AlreadyExists = 8,
     Unauthorized = 9,
-    Internal = 10,
-    NotSupported = 11,
-    Unavailable = 12,
+    Unavailable = 10,
+    ResourceExhaused = 11,
+    Internal = 12,
+    NotSupported = 13,
   };
 };
 
