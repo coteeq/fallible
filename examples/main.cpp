@@ -3,7 +3,7 @@
 
 using wheels::ErrorCodes;
 
-// Error = code + domain [+ reason] [+ location] [+ context]
+// Error = code [+ domain] [+ reason] [+ location] [+ context]
 using wheels::Error;
 // Result<T> = Error | value of type T
 using wheels::Result;
@@ -43,15 +43,22 @@ Result<int> Baz() {
 //////////////////////////////////////////////////////////////////////
 
 int main() {
+  // #1: Unwrap result or panic (abort process)
+
   std::cout << "Foo() -> "
             << Foo().ExpectValueOr("Fail miserably")  // Success
             << std::endl;
 
+  // #2: Ignore result
+
   Bar();  // Compiler warning (or error with -werror flag): Result ignored
+
+  // #3: Intentionally ignore result
 
   Bar().Ignore();  // Intentionally suppress compiler warning
 
-  // #4
+  // #4: Check for success, then unwrap
+
   {
     auto result = Bar();
 
@@ -65,6 +72,8 @@ int main() {
       std::cout << "Bar() -> " << error.AsJson().dump(1, ' ') << std::endl;
     }
   }
+
+  // #5: Panic on failure
 
   Bar().ExpectOk("Cannot survive Bar failure");  // Process crashed
 
