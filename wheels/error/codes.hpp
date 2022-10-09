@@ -26,7 +26,7 @@ struct ErrorCodes {
     AlreadyExists = 8,
     Unauthorized = 9,
     Unavailable = 10,
-    ResourceExhaused = 11,
+    ResourceExhausted = 11,
     Internal = 12,
     NotSupported = 13,
   };

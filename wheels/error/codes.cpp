@@ -17,7 +17,7 @@ std::string ErrorCodeName(int code) {
     CASE(AlreadyExists)
     CASE(Unauthorized)
     CASE(Unavailable)
-    CASE(ResourceExhaused)
+    CASE(ResourceExhausted)
     CASE(Internal)
     CASE(NotSupported)
     default:
