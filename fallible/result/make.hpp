@@ -1,12 +1,12 @@
 #pragma once
 
-#include <wheels/result/result.hpp>
-#include <wheels/error/codes.hpp>
+#include <fallible/result/result.hpp>
+#include <fallible/error/codes.hpp>
 
 #include <wheels/support/exception.hpp>
 #include <wheels/support/unit.hpp>
 
-namespace wheels {
+namespace fallible {
 
 ////////////////////////////////////////////////////////////
 
@@ -36,8 +36,6 @@ class [[nodiscard]] Failure {
 
 ////////////////////////////////////////////////////////////
 
-namespace result {
-
 template <typename T>
 Result<T> Ok(T&& value) {
   return Result<T>::Ok(std::move(value));
@@ -53,7 +51,6 @@ Result<T> Ok(const T& value) {
   return Result<T>::Ok(value);
 }
 
-// Usage: make_result::Ok()
 Status Ok();
 
 inline Result<wheels::Unit> OkUnit() {
@@ -68,9 +65,9 @@ detail::Failure CurrentException();
 //
 // Usage:
 // Result<Widget> Foo() {
-//   Result<Gadget> g = Bar();
-//   if (!g.IsOk()) {
-//     return PropagateError(g);
+//   Result<Gadget> result = Bar();
+//   if (!result.IsOk()) {
+//     return PropagateError(result);
 //   }
 //  ...
 // }
@@ -84,6 +81,7 @@ detail::Failure PropagateError(const Result<T>& result) {
 // Convert status code (error or success) to Result
 Status ToStatus(std::error_code error);
 
+// Erase value type
 template <typename T>
 Status JustStatus(const Result<T>& result) {
   if (result.IsOk()) {
@@ -96,6 +94,4 @@ Status JustStatus(const Result<T>& result) {
 // For tests
 detail::Failure NotSupported();
 
-}  // namespace result
-
-}  // namespace wheels
+}  // namespace fallible

@@ -1,3 +1,2 @@
-add_executable(wheels-result-examples
-        main.cpp)
-target_link_libraries(wheels-result-examples wheels-result)
+add_executable(fallible-examples main.cpp)
+target_link_libraries(fallible-examples fallible)

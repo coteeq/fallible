@@ -1,4 +1,4 @@
-add_library(wheels-result
+add_library(fallible
 		error/codes.hpp
 		error/codes.cpp
 		error/error.hpp
@@ -11,8 +11,8 @@ add_library(wheels-result
 
 # Dependencies
 
-target_link_libraries(wheels-result
+target_link_libraries(fallible
 		wheels
 		nlohmann_json::nlohmann_json)
 
-target_include_directories(wheels-result PUBLIC ..)
+target_include_directories(fallible PUBLIC ..)

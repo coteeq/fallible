@@ -1,13 +1,13 @@
-#include <wheels/error/error.hpp>
-#include <wheels/error/codes.hpp>
+#include <fallible/error/error.hpp>
+#include <fallible/error/codes.hpp>
 
 #include <wheels/test/test_framework.hpp>
 
 #include <iostream>
 
-using wheels::Error;
-using wheels::ErrorCodes;
-using wheels::Err;
+using fallible::Error;
+using fallible::ErrorCodes;
+using fallible::Err;
 
 ////////////////////////////////////////////////////////////////////////////////
 

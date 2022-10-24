@@ -1,8 +1,8 @@
 #pragma once
 
-#include <wheels/error/error.hpp>
+#include <fallible/error/error.hpp>
 
-namespace wheels {
+namespace fallible {
 
 class ErrorException : public std::runtime_error {
  public:
@@ -23,4 +23,4 @@ class ErrorException : public std::runtime_error {
   throw ErrorException{std::move(e)};
 }
 
-}  // namespace wheels
+}  // namespace fallible

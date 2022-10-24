@@ -1,20 +1,20 @@
-#include <wheels/result/result.hpp>
-#include <wheels/result/make.hpp>
+#include <fallible/result/result.hpp>
+#include <fallible/result/make.hpp>
 
-using wheels::ErrorCodes;
+using fallible::ErrorCodes;
 
 // Error = code [+ domain] [+ reason] [+ location] [+ context]
-using wheels::Error;
+using fallible::Error;
 // Result<T> = Error | value of type T
-using wheels::Result;
+using fallible::Result;
 
 // Error constructor
-using wheels::Err;
+using fallible::Err;
 
 // Result constructors
-using wheels::result::Ok;
-using wheels::result::PropagateError;
-using wheels::result::Fail;
+using fallible::Ok;
+using fallible::PropagateError;
+using fallible::Fail;
 
 //////////////////////////////////////////////////////////////////////
 

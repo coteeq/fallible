@@ -1,7 +1,7 @@
 #pragma once
 
-#include <wheels/error/error.hpp>
-#include <wheels/error/throw.hpp>
+#include <fallible/error/error.hpp>
+#include <fallible/error/throw.hpp>
 
 #include <wheels/support/assert.hpp>
 
@@ -25,7 +25,7 @@
  * https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html
  */
 
-namespace wheels {
+namespace fallible {
 
 ////////////////////////////////////////////////////////////
 
@@ -102,35 +102,35 @@ class [[nodiscard]] Result {
 
   // Ignores value, panics on error
   // Usage: result.ExpectOk();
-  void ExpectOk(SourceLocation where = SourceLocation::Current()) {
+  void ExpectOk(wheels::SourceLocation where = wheels::SourceLocation::Current()) {
     ExpectOkImpl(where, "Unexpected error");
   }
 
   // Ignores value, panics on error
   // Usage: result.ExpectOk("Something bad happens");
   void ExpectOk(const std::string& or_error,
-                SourceLocation where = SourceLocation::Current()) {
+                wheels::SourceLocation where = wheels::SourceLocation::Current()) {
     ExpectOkImpl(where, or_error);
   }
 
-  T& ExpectValue(SourceLocation where = SourceLocation::Current())& {
+  T& ExpectValue(wheels::SourceLocation where = wheels::SourceLocation::Current())& {
     ExpectOkImpl(where, "Unexpected error");
     return value_;
   }
 
-  T&& ExpectValue(SourceLocation where = SourceLocation::Current())&& {
+  T&& ExpectValue(wheels::SourceLocation where = wheels::SourceLocation::Current())&& {
     ExpectOkImpl(where, "Unexpected error");
     return std::move(value_);
   }
 
   T& ExpectValueOr(const std::string& or_error,
-                 SourceLocation where = SourceLocation::Current())& {
+                 wheels::SourceLocation where = wheels::SourceLocation::Current())& {
     ExpectOkImpl(where, or_error);
     return value_;
   }
 
   T&& ExpectValueOr(const std::string& or_error,
-                   SourceLocation where = SourceLocation::Current()) && {
+                   wheels::SourceLocation where = wheels::SourceLocation::Current()) && {
     ExpectOkImpl(where, or_error);
     return std::move(value_);
   }
@@ -269,9 +269,9 @@ class [[nodiscard]] Result {
     }
   }
 
-  void ExpectOkImpl(SourceLocation where, const std::string& or_error) {
+  void ExpectOkImpl(wheels::SourceLocation where, const std::string& or_error) {
     if (!IsOk()) {
-      detail::Panic(where, StringBuilder()
+      wheels::detail::Panic(where, wheels::StringBuilder()
                                << "Result::ExpectOk failed: " << or_error
                                << " (" << error_.Describe() << ")");
     }
@@ -326,14 +326,14 @@ class [[nodiscard]] Result<void> {
 
   // Ignores value, panics on error
   // Usage: status.ExpectOk();
-  void ExpectOk(SourceLocation where = SourceLocation::Current()) {
+  void ExpectOk(wheels::SourceLocation where = wheels::SourceLocation::Current()) {
     ExpectImpl(where, "Unexpected error");
   }
 
   // Ignores value, panics on error
   // Usage: status.ExpectOk("Something bad happens");
   void ExpectOk(const std::string& or_error,
-                SourceLocation where = SourceLocation::Current()) {
+                wheels::SourceLocation where = wheels::SourceLocation::Current()) {
     ExpectImpl(where, or_error);
   }
 
@@ -365,9 +365,9 @@ class [[nodiscard]] Result<void> {
     error_ = std::move(error);
   }
 
-  void ExpectImpl(SourceLocation where, const std::string& or_error) {
+  void ExpectImpl(wheels::SourceLocation where, const std::string& or_error) {
     if (!IsOk()) {
-      detail::Panic(where, StringBuilder()
+      wheels::detail::Panic(where, wheels::StringBuilder()
                                << "Status::ExpectOk failed: " << or_error
                                << " (" << error_->Describe() << ")");
     }
@@ -379,4 +379,4 @@ class [[nodiscard]] Result<void> {
 
 using Status = Result<void>;
 
-}  // namespace wheels
+}  // namespace fallible

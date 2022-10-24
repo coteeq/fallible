@@ -1,10 +1,8 @@
-#include <wheels/result/make.hpp>
+#include <fallible/result/make.hpp>
 
-#include <wheels/error/codes.hpp>
+#include <fallible/error/codes.hpp>
 
-namespace wheels {
-
-namespace result {
+namespace fallible {
 
 Status Ok() {
   return Status::Ok();
@@ -33,6 +31,4 @@ detail::Failure NotSupported() {
                   .Done());
 }
 
-}  // namespace result
-
-}  // namespace wheels
+}  // namespace fallible

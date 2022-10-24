@@ -1,6 +1,6 @@
-#include <wheels/error/codes.hpp>
+#include <fallible/error/codes.hpp>
 
-namespace wheels {
+namespace fallible {
 
 #define CASE(code) case ErrorCodes::code: return #code;
 
@@ -25,4 +25,4 @@ std::string ErrorCodeName(int code) {
   }
 }
 
-}  // namespace wheels
+}  // namespace fallible

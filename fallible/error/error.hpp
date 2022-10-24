@@ -4,7 +4,7 @@
 
 #include <wheels/support/source_location.hpp>
 
-namespace wheels {
+namespace fallible {
 
 //////////////////////////////////////////////////////////////////////
 
@@ -55,7 +55,7 @@ class [[nodiscard]] ErrorBuilder {
   using Json = nlohmann::json;
 
  public:
-  ErrorBuilder(int32_t code, SourceLocation loc);
+  ErrorBuilder(int32_t code, wheels::SourceLocation loc);
 
   ErrorBuilder& Domain(std::string name);
   ErrorBuilder& Reason(std::string descr);
@@ -70,8 +70,8 @@ class [[nodiscard]] ErrorBuilder {
 
 }  // namespace detail
 
-inline detail::ErrorBuilder Err(int32_t code, SourceLocation loc = SourceLocation::Current()) {
+inline detail::ErrorBuilder Err(int32_t code, wheels::SourceLocation loc = wheels::SourceLocation::Current()) {
   return detail::ErrorBuilder(code, loc);
 }
 
-}  // namespace wheels
+}  // namespace fallible

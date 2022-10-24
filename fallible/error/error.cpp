@@ -1,17 +1,17 @@
-#include <wheels/error/error.hpp>
-#include <wheels/error/codes.hpp>
+#include <fallible/error/error.hpp>
+#include <fallible/error/codes.hpp>
 
 #include <wheels/support/assert.hpp>
 
 #include <sstream>
 
-namespace wheels {
+namespace fallible {
 
 //////////////////////////////////////////////////////////////////////
 
 namespace {
 
-nlohmann::json SourceLocationToJson(const SourceLocation& loc) {
+nlohmann::json SourceLocationToJson(const wheels::SourceLocation& loc) {
   // clang-format off
   return {
       {"file", loc.File()},
@@ -21,7 +21,7 @@ nlohmann::json SourceLocationToJson(const SourceLocation& loc) {
   // clang-format on
 }
 
-SourceLocation SourceLocationFromJson(const nlohmann::json& json) {
+wheels::SourceLocation SourceLocationFromJson(const nlohmann::json& json) {
   // clang-format off
   return {
       json["file"].get<std::string>(),
@@ -55,7 +55,7 @@ bool Error::HasSourceLocation() const {
   return repr_.contains("where");
 }
 
-SourceLocation Error::GetSourceLocation() const {
+wheels::SourceLocation Error::GetSourceLocation() const {
   return SourceLocationFromJson(repr_["where"]);
 }
 
@@ -117,7 +117,7 @@ std::string Error::Describe() const {
 
 namespace detail {
 
-ErrorBuilder::ErrorBuilder(int32_t code, SourceLocation loc) {
+ErrorBuilder::ErrorBuilder(int32_t code, wheels::SourceLocation loc) {
   repr_["code"] = code;
   repr_["where"] = SourceLocationToJson(loc);
 }
@@ -148,4 +148,4 @@ Error ErrorBuilder::Done() {
 
 }  // namespace detail
 
-}  // namespace wheels
+}  // namespace fallible

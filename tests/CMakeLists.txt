@@ -1,6 +1,6 @@
-add_executable(wheels-result-tests
+add_executable(fallible-tests
 	all.cpp
 	error.cpp
 	result.cpp)
 
-target_link_libraries(wheels-result-tests wheels-result wheels)
+target_link_libraries(fallible-tests fallible wheels)
