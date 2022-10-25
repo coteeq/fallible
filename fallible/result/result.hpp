@@ -3,9 +3,10 @@
 #include <fallible/error/error.hpp>
 #include <fallible/error/throw.hpp>
 
+#include <wheels/support/unit.hpp>
+
 #include <wheels/support/assert.hpp>
 
-#include <optional>
 #include <utility>
 
 /* References
@@ -287,96 +288,8 @@ class [[nodiscard]] Result {
 
 ////////////////////////////////////////////////////////////
 
-// Status = Result<void> = Success | Error
+// Status = Result<Unit> = Success | Error
 
-template <>
-class [[nodiscard]] Result<void> {
- public:
-  using ValueType = void;
-
-  static Result Ok() {
-    return Result{};
-  }
-
-  static Result Fail(Error error) {
-    return Result(std::move(error));
-  }
-
-  // Testing
-
-  bool HasError() const {
-    return error_.has_value();
-  }
-
-  bool IsOk() const {
-    return !HasError();
-  }
-
-  /* Intentionally disabled
-  explicit operator bool() const {
-    return IsOk();
-  }
-  */
-
-  void ThrowIfError() const {
-    if (error_) {
-      ThrowError(*error_);
-    }
-  }
-
-  // Ignores value, panics on error
-  // Usage: status.ExpectOk();
-  void ExpectOk(wheels::SourceLocation where = wheels::SourceLocation::Current()) {
-    ExpectImpl(where, "Unexpected error");
-  }
-
-  // Ignores value, panics on error
-  // Usage: status.ExpectOk("Something bad happens");
-  void ExpectOk(const std::string& or_error,
-                wheels::SourceLocation where = wheels::SourceLocation::Current()) {
-    ExpectImpl(where, or_error);
-  }
-
-  void Ignore() {
-    // No-op
-  }
-
-  void Unwrap() const {
-    ThrowIfError();
-  }
-
-  // Unsafe
-  const Error& GetError() const {
-    return *error_;
-  }
-
-  bool MatchErrorCode(int expected) const {
-    return GetErrorCode() == expected;
-  }
-
-  int32_t GetErrorCode() const {
-    return error_->GetCode();
-  }
-
- private:
-  Result() = default;
-
-  Result(Error error) {
-    error_ = std::move(error);
-  }
-
-  void ExpectImpl(wheels::SourceLocation where, const std::string& or_error) {
-    if (!IsOk()) {
-      wheels::detail::Panic(where, wheels::StringBuilder()
-                               << "Status::ExpectOk failed: " << or_error
-                               << " (" << error_->Describe() << ")");
-    }
-  }
-
- private:
-  std::optional<Error> error_;
-};
-
-using Status = Result<void>;
+using Status = Result<wheels::Unit>;
 
 }  // namespace fallible

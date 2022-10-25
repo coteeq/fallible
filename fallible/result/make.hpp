@@ -10,6 +10,25 @@ namespace fallible {
 
 ////////////////////////////////////////////////////////////
 
+template <typename T>
+Result<T> Ok(T&& value) {
+  return Result<T>::Ok(std::move(value));
+}
+
+template <typename T>
+Result<T> Ok(T& value) {
+  return Result<T>::Ok(value);
+}
+
+template <typename T>
+Result<T> Ok(const T& value) {
+  return Result<T>::Ok(value);
+}
+
+Status Ok();
+
+////////////////////////////////////////////////////////////
+
 namespace detail {
 
 class [[nodiscard]] Failure {
@@ -34,30 +53,9 @@ class [[nodiscard]] Failure {
 
 }  // namespace detail
 
-////////////////////////////////////////////////////////////
-
-template <typename T>
-Result<T> Ok(T&& value) {
-  return Result<T>::Ok(std::move(value));
-}
-
-template <typename T>
-Result<T> Ok(T& value) {
-  return Result<T>::Ok(value);
-}
-
-template <typename T>
-Result<T> Ok(const T& value) {
-  return Result<T>::Ok(value);
-}
-
-Status Ok();
-
-inline Result<wheels::Unit> OkUnit() {
-  return Result<wheels::Unit>::Ok({});
-}
-
 detail::Failure Fail(Error error);
+
+////////////////////////////////////////////////////////////
 
 detail::Failure CurrentException();
 
@@ -69,7 +67,7 @@ detail::Failure CurrentException();
 //   if (!result.IsOk()) {
 //     return PropagateError(result);
 //   }
-//  ...
+//   ...
 // }
 //
 // Precondition: result.HasError()
@@ -78,7 +76,9 @@ detail::Failure PropagateError(const Result<T>& result) {
   return detail::Failure{result.GetError()};
 }
 
-// Convert status code (error or success) to Result
+////////////////////////////////////////////////////////////
+
+// Convert std::error_code (error or success) to Status
 Status ToStatus(std::error_code error);
 
 // Erase value type
@@ -87,9 +87,11 @@ Status JustStatus(const Result<T>& result) {
   if (result.IsOk()) {
     return Ok();
   } else {
-    return Status::Fail(result.GetError());
+    return PropagateError(result);
   }
 }
+
+////////////////////////////////////////////////////////////
 
 // For tests
 detail::Failure NotSupported();

@@ -9,10 +9,17 @@ using fallible::ErrorCodes;
 using fallible::Result;
 using fallible::Status;
 
+// Constructors
+
+using fallible::Ok;
+using fallible::Fail;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 static Error TimedOut() {
-  return fallible::Err(ErrorCodes::TimedOut).Reason("Operation timed out").Done();
+  return fallible::Err(ErrorCodes::TimedOut)
+      .Reason("Operation timed out")
+      .Done();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -80,10 +87,6 @@ Result<std::string> MakeError() {
   return fallible::Fail(TimedOut());
 }
 
-fallible::Status MakeOkStatus() {
-  return Status::Ok();
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -144,11 +147,11 @@ TEST_SUITE(Result) {
 
     MakeVector(7).Ignore();
     MakeError().Ignore();
-    MakeOkStatus().Ignore();
+    Ok().Ignore();
   }
 
   SIMPLE_TEST(MatchErrorCode) {
-    Result<void> result = fallible::Fail(TimedOut());
+    Status result = Fail(TimedOut());
     ASSERT_TRUE(result.MatchErrorCode(ErrorCodes::TimedOut));
   }
 
@@ -181,19 +184,23 @@ TEST_SUITE(Result) {
     ASSERT_EQ(result.ValueOrThrow().Message(), "");
   }
 
-  SIMPLE_TEST(Void) {
-    // Ok
-    auto result = Result<void>::Ok();
-    ASSERT_FALSE(result.HasError());
-    ASSERT_TRUE(result.IsOk());
-    result.ThrowIfError();  // Nothing happens
-    
-    // Fail
-    auto err_result = Result<void>::Fail(TimedOut());
-    ASSERT_TRUE(err_result.HasError());
-//    ASSERT_THROW(err_result.ThrowIfError(), std::system_error);
+  SIMPLE_TEST(Status) {
+    {
+      // Ok
+      auto status = Ok();
+      ASSERT_FALSE(status.HasError());
+      ASSERT_TRUE(status.IsOk());
+      status.ThrowIfError();  // Nothing happens
+    }
 
-    ASSERT_EQ(err_result.GetErrorCode(), ErrorCodes::TimedOut);
+    {
+      // Fail
+      Status err = Fail(TimedOut());
+      ASSERT_TRUE(err.HasError());
+      //    ASSERT_THROW(err_result.ThrowIfError(), std::system_error);
+
+      ASSERT_EQ(err.GetErrorCode(), ErrorCodes::TimedOut);
+    }
   }
 
   SIMPLE_TEST(ExpectOk) {
@@ -204,7 +211,7 @@ TEST_SUITE(Result) {
     }
 
     {
-      Status status = MakeOkStatus();
+      Status status = Ok();
       status.ExpectOk();
       status.ExpectOk("=(");
     }
@@ -236,12 +243,6 @@ TEST_SUITE(Result) {
     Result<std::vector<std::string>> lines = fallible::PropagateError(response);
     ASSERT_FALSE(lines.IsOk());
   }
-
-//  SIMPLE_TEST(MakeResultStatus) {
-//    auto result = fallible::ToStatus(TimedOut());
-//    ASSERT_FALSE(result.IsOk());
-//    ASSERT_TRUE(result.HasError());
-//  }
 
   Result<int> IntResult(int value) {
     return fallible::Ok(value);
