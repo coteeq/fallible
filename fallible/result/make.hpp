@@ -62,18 +62,20 @@ detail::Failure Fail(Error error);
 
 ////////////////////////////////////////////////////////////
 
-// PropagateError
-//
-// Usage:
-// Result<Widget> Foo() {
-//   Result<Gadget> result = Bar();
-//   if (!result.IsOk()) {
-//     return PropagateError(result);
-//   }
-//   ...
-// }
-//
-// Precondition: result.HasError()
+/*
+ * Precondition: result.HasError()
+ *
+ * Example:
+ *
+ * Result<Widget> Foo() {
+ *   Result<Gadget> result = Bar();
+ *   if (result.HasError()) {
+ *     return PropagateError(result);
+ *   }
+ *   // Happy path goes here
+ * }
+ */
+
 template <typename T>
 detail::Failure PropagateError(const Result<T>& result) {
   return detail::Failure{result.GetError()};
