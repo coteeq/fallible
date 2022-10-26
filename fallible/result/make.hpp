@@ -78,7 +78,7 @@ detail::Failure Fail(Error error);
 
 template <typename T>
 detail::Failure PropagateError(const Result<T>& result) {
-  return detail::Failure{result.GetError()};
+  return detail::Failure{result.Error()};
 }
 
 ////////////////////////////////////////////////////////////

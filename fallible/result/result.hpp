@@ -147,15 +147,15 @@ class [[nodiscard]] Result {
   // Unsafe: behavior is undefined if result holds a value instead of an error
 
   bool MatchErrorCode(int expected) const {
-    return GetErrorCode() == expected;
+    return ErrorCode() == expected;
   }
 
-  const Error& GetError() const {
+  const class Error& Error() const {
     return error_;
   }
 
-  int32_t GetErrorCode() const {
-    return error_.GetCode();
+  int32_t ErrorCode() const {
+    return error_.Code();
   }
 
   // Value accessors
@@ -258,7 +258,7 @@ class [[nodiscard]] Result {
     if (IsOk()) {
       return Result<wheels::Unit>::Ok({});
     } else {
-      return Result<wheels::Unit>::Fail(GetError());
+      return Result<wheels::Unit>::Fail(Error());
     }
   }
 
@@ -277,7 +277,7 @@ class [[nodiscard]] Result {
       value_(value) {
   }
 
-  explicit Result(Error error)
+  explicit Result(class Error error)
       : has_value_(false),
         error_(std::move(error)) {
   }
@@ -287,7 +287,7 @@ class [[nodiscard]] Result {
     if (has_value_) {
       new (&value_) T(std::move(that.value_));
     } else {
-      new (&error_) Error(std::move(that.error_));
+      new (&error_) class Error(std::move(that.error_));
     }
   }
 
@@ -296,7 +296,7 @@ class [[nodiscard]] Result {
     if (has_value_) {
       new (&value_) T(that.value_);
     } else {
-      new (&error_) Error(that.error_);
+      new (&error_) class Error(that.error_);
     }
   }
 
@@ -320,7 +320,7 @@ class [[nodiscard]] Result {
   bool has_value_;
   union {
     T value_;
-    Error error_;
+    class Error error_;
   };
 };
 

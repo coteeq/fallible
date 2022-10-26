@@ -12,22 +12,22 @@ class Error {
   using Json = nlohmann::json;
 
  public:
-  int32_t GetCode() const;
-  std::string GetDomain() const;
+  int32_t Code() const;
+  std::string Domain() const;
 
   bool HasReason() const;
-  std::string GetReason() const;
+  std::string Reason() const;
 
   bool HasSourceLocation() const;
-  wheels::SourceLocation GetSourceLocation() const;
+  wheels::SourceLocation SourceLocation() const;
 
   Error& AddSubError(Error&& that);
-  std::vector<Error> GetSubErrors() const;
-  Error GetSubError() const;
+  std::vector<Error> SubErrors() const;
+  Error SubError() const;
 
   Error& AttachContext(std::string_view key, Json value);
   bool HasContext() const;
-  Json GetContext() const;
+  Json Context() const;
 
   Json AsJson() const {
     return repr_;

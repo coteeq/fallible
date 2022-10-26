@@ -51,7 +51,7 @@ auto Result<T>::Map(F mapper) && {
     if (input.IsOk()) {
       return Result<U>::Ok(mapper(*input));
     } else {
-      return Result<U>::Fail(input.GetError());
+      return Result<U>::Fail(input.Error());
     }
   };
 
@@ -72,7 +72,7 @@ auto Result<T>::Map(F mapper) && {
     if (input.IsOk()) {
       return mapper(*input);
     } else {
-      return Result<U>::Fail(input.GetError());
+      return Result<U>::Fail(input.Error());
     }
   };
 
@@ -90,7 +90,7 @@ Result<T> Result<T>::Recover(H error_handler) && {
     if (input.IsOk()) {
       return input;
     } else {
-      return error_handler(input.GetError());
+      return error_handler(input.Error());
     }
   };
 

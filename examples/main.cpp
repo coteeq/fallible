@@ -16,6 +16,12 @@ using fallible::Ok;
 using fallible::PropagateError;
 using fallible::Fail;
 
+
+template <fallible::FaultyMapper<int> Mapper>
+auto Map(Result<int> input, Mapper mapper) {
+  return input.Map(std::move(mapper));
+}
+
 //////////////////////////////////////////////////////////////////////
 
 Result<int> Foo() {
@@ -67,13 +73,42 @@ int main() {
       // Behavior is undefined if result holds an error instead of a value
       std::cout << "Bar() -> " << *result << std::endl;
     } else {
-      auto error = result.GetError();
+      auto error = result.Error();
       // Or use error.GetCode(), error.GetReason() etc
       std::cout << "Bar() -> " << error.AsJson().dump(1, ' ') << std::endl;
     }
   }
 
-  // #5: Panic on failure
+  // #5: Monadic API
+  {
+    {
+      auto result = Foo()
+                        .Map([](int value) -> int {
+                          return value + 1;
+                        })
+                        .Map([](Result<int> input) {
+                          return Ok(*input + 1);
+                        });
+
+      std::cout << "Foo.Map.Map -> " << *result << std::endl;
+    }
+
+    {
+      // Recover from error
+
+      auto result = Bar()
+                        .Map([](std::string /*input*/) -> std::string {
+                           std::abort();
+                        }).Recover([](Error /*error*/) {
+                          return Ok<std::string>("Hello");
+                        });
+
+      assert(result.IsOk());
+      std::cout << "Bar.Map.Recover -> " << *result << std::endl;
+    }
+  }
+
+  // #6: Panic on failure
 
   Bar().ExpectOk("Cannot survive Bar failure");  // Process crashed
 

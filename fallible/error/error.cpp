@@ -35,11 +35,11 @@ wheels::SourceLocation SourceLocationFromJson(const nlohmann::json& json) {
 
 //////////////////////////////////////////////////////////////////////
 
-int32_t Error::GetCode() const {
+int32_t Error::Code() const {
   return repr_["code"].get<int32_t>();
 }
 
-std::string Error::GetDomain() const {
+std::string Error::Domain() const {
   return repr_["domain"].get<std::string>();
 }
 
@@ -47,7 +47,7 @@ bool Error::HasReason() const {
   return repr_.contains("reason");
 }
 
-std::string Error::GetReason() const {
+std::string Error::Reason() const {
   return repr_["reason"].get<std::string>();
 }
 
@@ -55,7 +55,7 @@ bool Error::HasSourceLocation() const {
   return repr_.contains("where");
 }
 
-wheels::SourceLocation Error::GetSourceLocation() const {
+wheels::SourceLocation Error::SourceLocation() const {
   return SourceLocationFromJson(repr_["where"]);
 }
 
@@ -68,7 +68,7 @@ bool Error::HasContext() const {
   return repr_.contains("ctx");
 }
 
-nlohmann::json Error::GetContext() const {
+nlohmann::json Error::Context() const {
   return repr_["ctx"];
 }
 
@@ -79,7 +79,7 @@ Error& Error::AddSubError(Error&& that) {
   return *this;
 }
 
-std::vector<Error> Error::GetSubErrors() const {
+std::vector<Error> Error::SubErrors() const {
   std::vector<Error> sub_errors;
 
   if (repr_.contains("sub_errors")) {
@@ -92,22 +92,22 @@ std::vector<Error> Error::GetSubErrors() const {
   return sub_errors;
 }
 
-Error Error::GetSubError() const {
-  auto sub_errors = GetSubErrors();
+Error Error::SubError() const {
+  auto sub_errors = SubErrors();
   WHEELS_VERIFY(sub_errors.size() == 1, "Unexpected number of sub-errors: " << sub_errors.size());
   return sub_errors.front();
 }
 
 std::string Error::Describe() const {
   std::stringstream out;
-  out << "code = " << GetCode()
-      << " (" << ErrorCodeName(GetCode()) << ")"
-      << ", domain = " << GetDomain()
-      << ", reason = '" << GetReason() << "'"
-      << ", origin = " << GetSourceLocation();
+  out << "code = " << Code()
+      << " (" << ErrorCodeName(Code()) << ")"
+      << ", domain = " << Domain()
+      << ", reason = '" << Reason() << "'"
+      << ", origin = " << SourceLocation();
 
   if (HasContext()) {
-    out << ", context = " << GetContext().dump();
+    out << ", context = " << Context().dump();
   }
 
   return out.str();

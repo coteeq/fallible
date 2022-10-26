@@ -26,8 +26,8 @@ TEST_SUITE(Error) {
   SIMPLE_TEST(JustWorks) {
     Error error = TimedOut();
 
-    ASSERT_EQ(error.GetCode(), ErrorCodes::TimedOut);
-    ASSERT_EQ(error.GetReason(), "Operation timed out");
+    ASSERT_EQ(error.Code(), ErrorCodes::TimedOut);
+    ASSERT_EQ(error.Reason(), "Operation timed out");
   }
 
   SIMPLE_TEST(SubErrors) {
@@ -42,9 +42,9 @@ TEST_SUITE(Error) {
 
     std::cout << error.AsJson().dump(1, ' ') << std::endl;
 
-    auto sub_error = error.GetSubError();
+    auto sub_error = error.SubError();
 
-    ASSERT_EQ(sub_error.GetCode(), 123);
+    ASSERT_EQ(sub_error.Code(), 123);
   }
 
   SIMPLE_TEST(ToJson) {

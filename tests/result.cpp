@@ -136,7 +136,7 @@ TEST_SUITE(Result) {
     ASSERT_FALSE(result.IsOk());
     ASSERT_TRUE(result.HasError());
 
-    int32_t error_code = result.GetErrorCode();
+    int32_t error_code = result.ErrorCode();
     ASSERT_EQ(error_code, ErrorCodes::TimedOut);
 
     // TODO
@@ -200,7 +200,7 @@ TEST_SUITE(Result) {
       ASSERT_TRUE(err.HasError());
       //    ASSERT_THROW(err_result.ThrowIfError(), std::system_error);
 
-      ASSERT_EQ(err.GetErrorCode(), ErrorCodes::TimedOut);
+      ASSERT_EQ(err.ErrorCode(), ErrorCodes::TimedOut);
     }
   }
 
@@ -387,8 +387,8 @@ TEST_SUITE(Result) {
       });
 
       ASSERT_TRUE(result.HasError());
-      auto error = result.GetError();
-      std::cout << error.GetReason() << std::endl;
+      auto error = result.Error();
+      std::cout << error.Reason() << std::endl;
     }
 
     {
