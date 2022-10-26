@@ -261,16 +261,6 @@ TEST_SUITE(Result) {
   }
   */
 
-  SIMPLE_TEST(JustStatus) {
-    auto answer = Result<int>::Ok(42);
-    auto ok = fallible::JustStatus(answer);
-    ASSERT_TRUE(ok.IsOk());
-
-    auto response = Result<std::string>::Fail(TimedOut());
-    auto fail = fallible::JustStatus(response);
-    ASSERT_FALSE(fail.IsOk());
-  }
-
 //  SIMPLE_TEST(Exceptions) {
 //    auto bad = []() -> Result<std::string> {
 //      try {
@@ -337,6 +327,92 @@ TEST_SUITE(Result) {
 
     ASSERT_TRUE(result.HasError());
     ASSERT_TRUE(result.MatchErrorCode(ErrorCodes::NotSupported));
+  }
+
+  SIMPLE_TEST(Map) {
+    {
+      // Value
+      auto result = Ok(7).Map([](int value) { return value + 1; });
+
+      ASSERT_TRUE(result.IsOk());
+      ASSERT_EQ(*result, 8);
+    }
+
+    {
+      // Faulty
+      auto result = Ok(7).Map([](int /*value*/) {
+        return Fail(TimedOut()).As<int>();
+      });
+
+      ASSERT_FALSE(result.IsOk());
+    }
+
+    {
+      // Result
+      auto result = Ok(7).Map([](Result<int> input) -> Result<int> {
+        if (input.IsOk()) {
+          return Ok(*input + 1);
+        } else {
+          return PropagateError(input);
+        }
+      });
+
+      ASSERT_TRUE(result.IsOk());
+      ASSERT_EQ(*result, 8);
+    }
+
+    {
+      // Recover
+      auto result = Fail(TimedOut()).As<int>().Map([](int value) {
+        std::abort();
+        return value + 1;
+      }).Recover([](Error) {
+        return Ok(7);
+      }).Map([](int value) {
+        return value + 1;
+      });
+
+      ASSERT_TRUE(result.IsOk());
+      ASSERT_EQ(*result, 8);
+    }
+  }
+
+  struct Cancelled : fallible::IgnoreThisException {};
+
+  SIMPLE_TEST(ThrowingMap) {
+    {
+      auto result = Ok(7).Map([](int) -> int {
+        throw std::runtime_error("Failed to increment");
+      });
+
+      ASSERT_TRUE(result.HasError());
+      auto error = result.GetError();
+      std::cout << error.GetReason() << std::endl;
+    }
+
+    {
+      bool cancelled = false;
+
+      try {
+        auto result = Ok(7).Map([](int) -> int { throw Cancelled{}; });
+      } catch (Cancelled&) {
+         cancelled = true;
+      }
+
+      ASSERT_TRUE(cancelled);
+    }
+  }
+
+  SIMPLE_TEST(JustStatus) {
+    {
+      auto status = Ok(7).JustStatus();
+      ASSERT_TRUE(status.IsOk());
+    }
+
+    {
+      auto status = Fail(TimedOut()).As<int>().JustStatus();
+      ASSERT_FALSE(status.IsOk());
+    }
   }
 }
 

@@ -43,8 +43,13 @@ class [[nodiscard]] Failure {
   Failure& operator=(Failure&&) = delete;
 
   template <typename T>
-  operator Result<T>() {
+  Result<T> As() {
     return Result<T>::Fail(std::move(error_));
+  }
+
+  template <typename T>
+  operator Result<T>() {
+    return As<T>();
   }
 
  private:
@@ -56,8 +61,6 @@ class [[nodiscard]] Failure {
 detail::Failure Fail(Error error);
 
 ////////////////////////////////////////////////////////////
-
-detail::Failure CurrentException();
 
 // PropagateError
 //

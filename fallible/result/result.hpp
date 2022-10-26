@@ -3,6 +3,8 @@
 #include <fallible/error/error.hpp>
 #include <fallible/error/throw.hpp>
 
+#include <fallible/result/mappers.hpp>
+
 #include <wheels/support/unit.hpp>
 
 #include <wheels/support/assert.hpp>
@@ -42,11 +44,11 @@ class [[nodiscard]] Result {
 
   // Static constructors
 
-  static Result Ok(T value) {
+  static Result<T> Ok(T value) {
     return Result(std::move(value));
   }
 
-  static Result Fail(Error error) {
+  static Result<T> Fail(Error error) {
     return Result(std::move(error));
   }
 
@@ -228,18 +230,49 @@ class [[nodiscard]] Result {
 //    return std::move(value_);
 //  }
 
+  // Monadic API
+
+  // Result<T> -> Result<U>
+  template <ResultMapper<T> F>
+  auto Map(F mapper) &&;
+
+  // T -> U
+  template <ValueMapper<T> F>
+  auto Map(F mapper) &&;
+
+  // T -> Result<U>
+  template <FaultyMapper<T> F>
+  auto Map(F mapper) &&;
+
+  // Error -> Result<T>
+  template <ErrorHandler<T> H>
+  Result<T> Recover(H error_handler) &&;
+
+
+  Result<wheels::Unit> JustStatus() {
+    if (IsOk()) {
+      return Result<wheels::Unit>::Ok({});
+    } else {
+      return Result<wheels::Unit>::Fail(GetError());
+    }
+  }
+
  private:
-  Result(T && value)
+  template <ResultMapper<T> F>
+  auto DoMap(F result_mapper) &&;
+
+ private:
+  explicit Result(T && value)
       : has_value_(true),
         value_(std::move(value)) {
   }
 
-  Result(const T& value)
+  explicit Result(const T& value)
     : has_value_(true),
       value_(value) {
   }
 
-  Result(Error error)
+  explicit Result(Error error)
       : has_value_(false),
         error_(std::move(error)) {
   }
@@ -293,3 +326,8 @@ class [[nodiscard]] Result {
 using Status = Result<wheels::Unit>;
 
 }  // namespace fallible
+
+////////////////////////////////////////////////////////////
+
+// Implementation
+#include <fallible/result/result-inl.hpp>
