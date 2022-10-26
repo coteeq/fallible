@@ -36,9 +36,7 @@ concept ErrorHandler = requires (H handler, Error error) {
 // Faulty value mapper: T -> Result<U>
 
 template <typename F, typename T>
-concept FaultyMapper = requires (F mapper, T value, int x) {
-  mapper(std::move(value));
-  mapper(7);
+concept FaultyMapper = requires (F mapper, T value) {
   { mapper(std::move(value)) } -> wheels::InstantiationOf<Result>;
 };
 
