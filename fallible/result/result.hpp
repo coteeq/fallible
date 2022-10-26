@@ -249,6 +249,10 @@ class [[nodiscard]] Result {
   template <ErrorHandler<T> H>
   Result<T> Recover(H error_handler) &&;
 
+  // ErrorHandler as mapper
+  template <ErrorHandler<T> H>
+  Result<T> Map(H error_handler) &&;
+
 
   Result<wheels::Unit> JustStatus() {
     if (IsOk()) {

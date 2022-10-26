@@ -81,6 +81,8 @@ auto Result<T>::Map(F mapper) && {
 
 //////////////////////////////////////////////////////////////////////
 
+// Recover
+
 template <typename T>
 template <ErrorHandler<T> H>
 Result<T> Result<T>::Recover(H error_handler) && {
@@ -93,6 +95,14 @@ Result<T> Result<T>::Recover(H error_handler) && {
   };
 
   return std::move(*this).DoMap(std::move(result_mapper));
+}
+
+// Recover as Map
+
+template <typename T>
+template <ErrorHandler<T> H>
+Result<T> Result<T>::Map(H error_handler) && {
+  return std::move(*this).Recover(std::move(error_handler));
 }
 
 }  // namespace fallible
