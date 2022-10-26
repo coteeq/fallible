@@ -6,10 +6,18 @@ _All happy requests are alike; each unhappy request is unhappy in its own way_.
 
 - Containers
   - `Error`
-  - `Result<T>` = `Error` | `T`
+  - `Result<T>` = `T` + `Error`
+    - `Status` = `Result<Unit>`
 - Constructors
   - `Error`: `Err`
-  - `Result`: `Ok`, `Fail`, `PropagateError`, etc
+  - `Result` / `Status`:
+    - `Ok`
+    - `Fail`
+    - `PropagateError`
+    - `ToStatus(std::error_code)`
+- Monadic API for `Result<T>`:
+  - `Map`
+  - `Recover`
 
 [Examples](examples/main.cpp)
 
