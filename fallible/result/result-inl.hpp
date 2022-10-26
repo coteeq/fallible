@@ -16,8 +16,10 @@ auto Result<T>::DoMap(F mapper) && {
   try {
     return mapper(std::move(*this));
   } catch (IgnoreThisException&) {
+    // Ignore
     throw;
   } catch (...) {
+    // Unhandled user exception
     return ResultU::Fail(
         Err(ErrorCodes::Unknown)
             .Domain("Fallible")

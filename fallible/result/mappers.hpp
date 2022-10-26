@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fallible/error/error.hpp>
+#include <fallible/result/fwd.hpp>
 
 #include <wheels/support/concepts.hpp>
 
@@ -10,9 +11,6 @@
 namespace fallible {
 
 // clang-format off
-
-template <typename T>
-class Result;
 
 // ValueHandler
 

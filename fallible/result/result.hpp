@@ -3,6 +3,7 @@
 #include <fallible/error/error.hpp>
 #include <fallible/error/throw.hpp>
 
+#include <fallible/result/fwd.hpp>
 #include <fallible/result/mappers.hpp>
 
 #include <wheels/support/unit.hpp>
@@ -318,12 +319,6 @@ class [[nodiscard]] Result {
     Error error_;
   };
 };
-
-////////////////////////////////////////////////////////////
-
-// Status = Result<Unit> = Success | Error
-
-using Status = Result<wheels::Unit>;
 
 }  // namespace fallible
 
