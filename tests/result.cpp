@@ -1,5 +1,6 @@
 #include <fallible/result/result.hpp>
 #include <fallible/result/make.hpp>
+#include <fallible/result/type_traits.hpp>
 
 #include <wheels/test/test_framework.hpp>
 
@@ -413,6 +414,20 @@ TEST_SUITE(Result) {
       auto status = Fail(TimedOut()).As<int>().JustStatus();
       ASSERT_FALSE(status.IsOk());
     }
+  }
+
+  SIMPLE_TEST(MapResult) {
+    using Input = int;
+
+    auto mapper = [](Input input) {
+      return input;
+    };
+
+    using MapResult = fallible::MapResult<Input, decltype(mapper)>;
+    using MapValue = typename MapResult::ValueType;
+
+    bool same = std::is_same_v<int, MapValue>;
+    ASSERT_TRUE(same);
   }
 }
 
