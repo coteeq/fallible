@@ -8,7 +8,7 @@ namespace fallible {
 template <typename T>
 class Result;
 
-// Status = Success | Error
+// Status = Result<Unit> = Success | Error
 using Status = Result<wheels::Unit>;
 
 }  // namespace fallible
