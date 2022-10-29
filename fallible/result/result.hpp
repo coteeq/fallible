@@ -6,9 +6,10 @@
 #include <fallible/result/fwd.hpp>
 #include <fallible/result/mappers.hpp>
 
-#include <wheels/support/unit.hpp>
+#include <fallible/rt/panic.hpp>
 
-#include <wheels/support/assert.hpp>
+#include <wheels/support/unit.hpp>
+#include <wheels/support/string_builder.hpp>
 
 #include <utility>
 
@@ -310,9 +311,9 @@ class [[nodiscard]] Result {
 
   void ExpectOkImpl(wheels::SourceLocation where, const std::string& or_error) {
     if (!IsOk()) {
-      wheels::detail::Panic(where, wheels::StringBuilder()
-                               << "Result::ExpectOk failed: " << or_error
-                               << " (" << error_.Describe() << ")");
+      rt::Panic(where, wheels::StringBuilder()
+                           << "Result::ExpectOk failed: " << or_error
+                           << " (" << error_.Describe() << ")");
     }
   }
 
