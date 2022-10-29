@@ -25,7 +25,7 @@ auto Map(Result<int> input, Mapper mapper) {
 //////////////////////////////////////////////////////////////////////
 
 Result<int> Foo() {
-  return Ok(42);
+  return Ok(42);  // Wrap value to Result
 }
 
 Result<std::string> Bar() {
@@ -94,11 +94,27 @@ int main() {
     }
 
     {
+      // Wrap exceptions to errors
+
+      auto result = Foo()
+                        .Map([](int /*value*/) -> int {
+                          throw std::runtime_error("Failed");
+                        }).Map([](int value) {
+                          // Skipped
+                          return value + 1;
+                        });
+
+      assert(result.HasError());
+      std::cout << "Foo.Throw.Map -> Error" << std::endl;
+    }
+
+    {
       // Recover from error
 
       auto result = Bar()
                         .Map([](std::string /*input*/) -> std::string {
-                           std::abort();
+                          // Skipped
+                          std::abort();
                         }).Recover([](Error /*error*/) {
                           return Ok<std::string>("Hello");
                         });
