@@ -1,6 +1,8 @@
 #include <fallible/result/result.hpp>
 #include <fallible/result/make.hpp>
 
+//////////////////////////////////////////////////////////////////////
+
 using fallible::ErrorCodes;
 
 // Error = code [+ domain] [+ reason] [+ location] [+ context]
@@ -15,12 +17,6 @@ using fallible::Err;
 using fallible::Ok;
 using fallible::PropagateError;
 using fallible::Fail;
-
-
-template <fallible::FaultyMapper<int> Mapper>
-auto Map(Result<int> input, Mapper mapper) {
-  return input.Map(std::move(mapper));
-}
 
 //////////////////////////////////////////////////////////////////////
 
