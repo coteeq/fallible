@@ -254,14 +254,15 @@ class [[nodiscard]] Result {
   template <ErrorHandler<T> H>
   Result<T> Map(H error_handler) &&;
 
+  // Eat T -> Unit
+  template <ValueEater<T> F>
+  Status Map(F eater) &&;
 
-  Result<wheels::Unit> JustStatus() {
-    if (IsOk()) {
-      return Result<wheels::Unit>::Ok({});
-    } else {
-      return Result<wheels::Unit>::Fail(Error());
-    }
-  }
+  // Eat Result<T> -> Unit
+  template <ResultEater<T> F>
+  Status Map(F eater) &&;
+
+  Status JustStatus() &&;
 
  private:
   template <ResultMapper<T> F>

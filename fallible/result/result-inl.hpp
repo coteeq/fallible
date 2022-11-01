@@ -105,4 +105,49 @@ Result<T> Result<T>::Map(H error_handler) && {
   return std::move(*this).Recover(std::move(error_handler));
 }
 
+//////////////////////////////////////////////////////////////////////
+
+// Value eater
+
+template <typename T>
+template <ValueEater<T> F>
+Status Result<T>::Map(F eater) && {
+  auto result_mapper = [eater = std::move(eater)](Result<T> input) mutable -> Status {
+    if (input.IsOk()) {
+      eater(std::move(*input));
+      return Status::Ok({});
+    } else {
+      return Status::Fail(input.Error());
+    }
+  };
+
+  return std::move(*this).DoMap(std::move(result_mapper));
+}
+
+//////////////////////////////////////////////////////////////////////
+
+// Result eater
+
+template <typename T>
+template <ResultEater<T> F>
+Status Result<T>::Map(F eater) && {
+  auto result_mapper = [eater = std::move(eater)](Result<T> input) mutable -> Status {
+    eater(std::move(input));
+    return Status::Ok({});
+  };
+
+  return std::move(*this).DoMap(std::move(result_mapper));
+}
+
+//////////////////////////////////////////////////////////////////////
+
+template <typename T>
+Status Result<T>::JustStatus() && {
+  if (IsOk()) {
+    return Status::Ok({});
+  } else {
+    return Status::Fail(Error());
+  }
+}
+
 }  // namespace fallible

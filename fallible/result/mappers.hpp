@@ -40,11 +40,25 @@ concept FaultyMapper = requires (F mapper, T value) {
   { mapper(std::move(value)) } -> wheels::InstantiationOf<Result>;
 };
 
+// Value eater
+
+template <typename F, typename T>
+concept ValueEater = requires (F mapper, T value) {
+  { mapper(std::move(value)) } -> std::same_as<void>;
+};
+
+// Result eater
+
+template <typename F, typename T>
+concept ResultEater = requires (F mapper, Result<T> value) {
+  { mapper(std::move(value)) } -> std::same_as<void>;
+};
+
 // ValueMapper: T -> U
 
 // Exclude void, Result from output types
 template <typename F, typename T>
-concept ValueMapper = ValueHandler<F, T> && !FaultyMapper<F, T>;
+concept ValueMapper = ValueHandler<F, T> && !FaultyMapper<F, T> && !ValueEater<F, T>;
 
 // clang-format on
 

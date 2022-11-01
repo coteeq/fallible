@@ -429,5 +429,21 @@ TEST_SUITE(Result) {
     bool same = std::is_same_v<int, MapValue>;
     ASSERT_TRUE(same);
   }
+
+  SIMPLE_TEST(EatValue) {
+    auto status = fallible::Ok(7).Map([](int value) {
+      std::cout << value << std::endl;
+    });
+
+    ASSERT_TRUE(status.IsOk());
+  }
+
+  SIMPLE_TEST(EatResult) {
+    auto status = Fail(TimedOut()).As<int>().Map([](Result<int> result) {
+      ASSERT_TRUE(result.HasError());
+    });
+
+    ASSERT_TRUE(status.IsOk());
+  }
 }
 
