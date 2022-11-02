@@ -98,6 +98,10 @@ Error Error::SubError() const {
   return sub_errors.front();
 }
 
+bool Error::IsCancelled() const {
+  return Code() == ErrorCodes::Cancelled;
+}
+
 std::string Error::Describe() const {
   std::stringstream out;
   out << "code = " << Code()

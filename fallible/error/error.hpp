@@ -29,6 +29,9 @@ class Error {
   bool HasContext() const;
   Json Context() const;
 
+  // TODO: Cancellation / errors
+  bool IsCancelled() const;
+
   Json AsJson() const {
     return repr_;
   }
