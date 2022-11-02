@@ -60,6 +60,13 @@ concept ResultEater = requires (F mapper, Result<T> value) {
 template <typename F, typename T>
 concept ValueMapper = ValueHandler<F, T> && !FaultyMapper<F, T> && !ValueEater<F, T>;
 
+// IdentityMapper
+
+template <typename F>
+concept IdentityMapper = requires (F mapper) {
+  { mapper() } -> std::same_as<void>;
+};
+
 // clang-format on
 
 }  // namespace await::futures

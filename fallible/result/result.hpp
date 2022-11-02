@@ -262,6 +262,9 @@ class [[nodiscard]] Result {
   template <ResultEater<T> F>
   Status Map(F eater) &&;
 
+  template <IdentityMapper F>
+  Result<T> Map(F mapper);
+
   Status JustStatus() &&;
 
  private:

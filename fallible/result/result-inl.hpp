@@ -141,6 +141,20 @@ Status Result<T>::Map(F eater) && {
 
 //////////////////////////////////////////////////////////////////////
 
+// Identity mapper
+
+template <typename T>
+template <IdentityMapper F>
+Result<T> Result<T>::Map(F mapper) {
+  auto result_mapper = [mapper](Result<T> input) mutable {
+    mapper();
+    return input;
+  };
+  return std::move(*this).DoMap(std::move(result_mapper));
+}
+
+//////////////////////////////////////////////////////////////////////
+
 template <typename T>
 Status Result<T>::JustStatus() && {
   if (IsOk()) {

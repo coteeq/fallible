@@ -376,6 +376,16 @@ TEST_SUITE(Result) {
       ASSERT_TRUE(result.IsOk());
       ASSERT_EQ(*result, 8);
     }
+
+    {
+      // Identity
+      auto result = Ok(7).Map([]() {
+        std::cout << "Hi" << std::endl;
+      });
+
+      ASSERT_TRUE(result.IsOk());
+      ASSERT_EQ(*result, 7);
+    }
   }
 
   struct Cancelled : fallible::IgnoreThisException {};
