@@ -18,7 +18,7 @@ _All happy requests are alike; each unhappy request is unhappy in its own way_.
     - `PropagateError`
     - `ToStatus(std::error_code)`
 - Monadic API for `Result<T>`:
-  - Combinators:
+  - Combinators
     - `Map`
     - `Recover`
   - [Mappers](fallible/result/mappers.hpp)
