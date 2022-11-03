@@ -1,5 +1,6 @@
 add_executable(fallible-tests
 	all.cpp
+	context.cpp
 	error.cpp
 	result.cpp)
 

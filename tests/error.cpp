@@ -1,5 +1,6 @@
 #include <fallible/error/error.hpp>
 #include <fallible/error/codes.hpp>
+#include <fallible/error/make.hpp>
 
 #include <wheels/test/test_framework.hpp>
 
@@ -31,14 +32,15 @@ TEST_SUITE(Error) {
   }
 
   SIMPLE_TEST(SubErrors) {
-    Error error = Err(ErrorCodes::Internal)
-                      .Reason("Internal service error")
-                      .Done();
+    auto builder = Err(ErrorCodes::Internal)
+                       .Reason("Internal service error");
 
-    error.AddSubError(
+    builder.AddSubError(
       Err(123)
             .Reason("Transaction aborted")
             .Done());
+
+    auto error = builder.Done();
 
     std::cout << error.AsJson().dump(1, ' ') << std::endl;
 
@@ -51,8 +53,8 @@ TEST_SUITE(Error) {
     auto json = TimedOut().AsJson();
 
     ASSERT_EQ(json["code"].get<int32_t>(), ErrorCodes::TimedOut);
-    ASSERT_EQ(json["reason"].get<std::string>(), "Operation timed out");
-    ASSERT_TRUE(json.contains("where"));
+    ASSERT_EQ(json["context"]["reason"].get<std::string>(), "Operation timed out");
+    ASSERT_TRUE(json["context"].contains("source"));
 
     std::cout << "json = " << json << std::endl;
   }

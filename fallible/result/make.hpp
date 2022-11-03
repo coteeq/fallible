@@ -2,6 +2,7 @@
 
 #include <fallible/result/result.hpp>
 #include <fallible/error/codes.hpp>
+#include <fallible/error/make.hpp>
 
 #include <wheels/support/exception.hpp>
 #include <wheels/support/unit.hpp>

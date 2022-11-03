@@ -1,5 +1,7 @@
 #include <fallible/error/error.hpp>
+
 #include <fallible/error/codes.hpp>
+#include <fallible/error/make.hpp>
 
 #include <wheels/support/assert.hpp>
 
@@ -35,67 +37,16 @@ wheels::SourceLocation SourceLocationFromJson(const nlohmann::json& json) {
 
 //////////////////////////////////////////////////////////////////////
 
-int32_t Error::Code() const {
-  return repr_["code"].get<int32_t>();
-}
-
-std::string Error::Domain() const {
-  return repr_["domain"].get<std::string>();
-}
-
-bool Error::HasReason() const {
-  return repr_.contains("reason");
-}
-
-std::string Error::Reason() const {
-  return repr_["reason"].get<std::string>();
-}
-
-bool Error::HasSourceLocation() const {
-  return repr_.contains("where");
-}
-
-wheels::SourceLocation Error::SourceLocation() const {
-  return SourceLocationFromJson(repr_["where"]);
-}
-
-Error& Error::AttachContext(std::string_view key, Json value) {
-  repr_["ctx"][key] = value;
-  return *this;
-}
-
-bool Error::HasContext() const {
-  return repr_.contains("ctx");
-}
-
-nlohmann::json Error::Context() const {
-  return repr_["ctx"];
-}
-
-// Sub-errors
-
-Error& Error::AddSubError(Error&& that) {
-  repr_["sub_errors"].push_back(std::move(that.repr_));
-  return *this;
-}
-
-std::vector<Error> Error::SubErrors() const {
-  std::vector<Error> sub_errors;
-
-  if (repr_.contains("sub_errors")) {
-    auto sub_errors_obj = repr_["sub_errors"];
-    for (size_t i = 0; i < sub_errors_obj.size(); ++i) {
-      sub_errors.push_back({sub_errors_obj[i]});
-    }
-  }
-
-  return sub_errors;
+Error::Error(detail::ErrorBuilder& builder)
+    : code_(builder.code_),
+      context_(builder.context_.Done()),
+      sub_errors_(std::move(builder.sub_errors_)) {
+  //
 }
 
 Error Error::SubError() const {
-  auto sub_errors = SubErrors();
-  WHEELS_VERIFY(sub_errors.size() == 1, "Unexpected number of sub-errors: " << sub_errors.size());
-  return sub_errors.front();
+  WHEELS_VERIFY(sub_errors_.size() == 1, "Unexpected number of sub-errors: " << sub_errors_.size());
+  return sub_errors_.front();
 }
 
 bool Error::IsCancelled() const {
@@ -110,8 +61,18 @@ std::string Error::Describe() const {
       << ", reason = '" << Reason() << "'"
       << ", origin = " << SourceLocation();
 
-  if (HasContext()) {
-    out << ", context = " << Context().dump();
+  const auto& tags = Tags();
+
+  if (!tags.empty()) {
+    out << ", context = {";
+    size_t index = 0;
+    for (const auto& [k, v] : tags) {
+      if (index > 0) {
+        out << ", ";
+      }
+      out << k << " = " << v;
+      ++index;
+    }
   }
 
   return out.str();
@@ -119,37 +80,53 @@ std::string Error::Describe() const {
 
 //////////////////////////////////////////////////////////////////////
 
-namespace detail {
+nlohmann::json Error::AsJson() const {
+  nlohmann::json context_json = {
+    {"domain", context_.Domain()},
+    {"reason", context_.Reason()},
+    {"source", SourceLocationToJson(context_.Source())}
+  };
 
-ErrorBuilder::ErrorBuilder(int32_t code, wheels::SourceLocation loc) {
-  repr_["code"] = code;
-  repr_["where"] = SourceLocationToJson(loc);
+  const auto& tags = context_.Tags();
+
+  if (!tags.empty()) {
+    nlohmann::json tags_json = {};
+    for (const auto& [k, v] : tags) {
+      tags_json[k] = v;
+    }
+    context_json.push_back({"tags", tags_json});
+  }
+
+  std::vector<nlohmann::json> sub_errors_json;
+  for (const auto& error : sub_errors_) {
+    sub_errors_json.push_back(error.AsJson());
+  }
+
+  return {
+    {"code", code_},
+    {"context", context_json},
+    {"sub_errors", sub_errors_json}
+  };
 }
 
-ErrorBuilder& ErrorBuilder::Domain(std::string name) {
-  repr_["domain"] = name;
-  return *this;
-}
+Error Error::FromRepr(nlohmann::json repr) {
+  auto builder = Err(repr["code"])
+      .Domain(repr["context"]["domain"])
+      .Reason(repr["context"]["reason"])
+      .Location(SourceLocationFromJson(repr["context"]["source"]));
 
-ErrorBuilder& ErrorBuilder::Reason(std::string descr) {
-  repr_["reason"] = descr;
-  return *this;
-}
+  if (repr["context"].contains("tags")) {
+    auto tags = repr["context"]["tags"];
+    for (const auto& [k, v] : tags.items()) {
+      builder.AddTag(k, v);
+    }
+  }
 
-ErrorBuilder& ErrorBuilder::AddSubError(Error e) {
-  repr_["sub_errors"].push_back(e.AsJson());
-  return *this;
-}
+  for (const auto& sub : repr["sub_errors"]) {
+    builder.AddSubError(Error::FromRepr(sub));
+  }
 
-ErrorBuilder& ErrorBuilder::AttachContext(std::string_view key, nlohmann::json value) {
-  repr_["ctx"][key] = value;
-  return *this;
+  return builder.Done();
 }
-
-Error ErrorBuilder::Done() {
-  return Error::FromRepr(std::move(repr_));
-}
-
-}  // namespace detail
 
 }  // namespace fallible

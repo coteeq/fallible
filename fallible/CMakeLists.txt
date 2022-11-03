@@ -1,8 +1,14 @@
 add_library(fallible
+		context/context.hpp
+		context/context.cpp
+		context/make.hpp
+		context/tags.hpp
 		error/codes.hpp
 		error/codes.cpp
 		error/error.hpp
 		error/error.cpp
+		error/make.hpp
+		error/make.cpp
 		error/throw.hpp
 		result/result.hpp
 		result/make.hpp

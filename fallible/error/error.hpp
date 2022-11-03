@@ -2,79 +2,63 @@
 
 #include <nlohmann/json.hpp>
 
-#include <wheels/support/source_location.hpp>
+#include <fallible/error/fwd.hpp>
+#include <fallible/context/context.hpp>
+
+#include <vector>
 
 namespace fallible {
 
-//////////////////////////////////////////////////////////////////////
-
 class Error {
-  using Json = nlohmann::json;
+  friend class detail::ErrorBuilder;
 
  public:
-  int32_t Code() const;
-  std::string Domain() const;
+  int32_t Code() const {
+    return code_;
+  }
 
-  bool HasReason() const;
-  std::string Reason() const;
+  const Context& context() const {
+    return context_;
+  }
 
-  bool HasSourceLocation() const;
-  wheels::SourceLocation SourceLocation() const;
+  std::string Domain() const {
+    return context_.Domain();
+  }
 
-  Error& AddSubError(Error&& that);
-  std::vector<Error> SubErrors() const;
+  std::string Reason() const {
+    return context_.Reason();
+  }
+
+  wheels::SourceLocation SourceLocation() const {
+    return context_.Source();
+  }
+
+  std::vector<Error> SubErrors() const {
+    return sub_errors_;
+  }
+
   Error SubError() const;
 
-  Error& AttachContext(std::string_view key, Json value);
-  bool HasContext() const;
-  Json Context() const;
-
-  // TODO: Cancellation / errors
-  bool IsCancelled() const;
-
-  Json AsJson() const {
-    return repr_;
+  const ContextTags& Tags() const {
+    return context_.Tags();
   }
 
   std::string Describe() const;
 
-  static Error FromRepr(Json repr) {
-    return {std::move(repr)};
-  }
+  // TODO: Cancellation / errors
+  bool IsCancelled() const;
+
+  nlohmann::json AsJson() const;
+
+  static Error FromRepr(nlohmann::json repr);
 
  private:
-  Error(Json obj) : repr_(std::move(obj)) {
-  }
+  Error(detail::ErrorBuilder&);
 
  private:
-  Json repr_;
+  int32_t code_;
+  Context context_;
+  std::vector<Error> sub_errors_;
 };
-
-//////////////////////////////////////////////////////////////////////
-
-namespace detail {
-
-class [[nodiscard]] ErrorBuilder {
-  using Json = nlohmann::json;
-
- public:
-  ErrorBuilder(int32_t code, wheels::SourceLocation loc);
-
-  ErrorBuilder& Domain(std::string name);
-  ErrorBuilder& Reason(std::string descr);
-  ErrorBuilder& AttachContext(std::string_view key, Json value);
-  ErrorBuilder& AddSubError(Error e);
-
-  Error Done();
-
- private:
-  Json repr_;
-};
-
-}  // namespace detail
-
-inline detail::ErrorBuilder Err(int32_t code, wheels::SourceLocation loc = wheels::SourceLocation::Current()) {
-  return detail::ErrorBuilder(code, loc);
-}
 
 }  // namespace fallible
