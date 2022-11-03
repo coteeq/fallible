@@ -5,10 +5,12 @@ _All happy requests are alike; each unhappy request is unhappy in its own way_.
 ## Content
 
 - Containers
-  - `Error`
+  - `Context`
+  - `Error` = `int32_t` code + `Context`
   - `Result<T>` = `T` + `Error`
     - `Status` = `Result<Unit>`
-- Constructors
+- Constructors (`make`)
+  - `Context`: `Ctx`
   - `Error`: `Err`
   - `Result` / `Status`:
     - `Ok`
@@ -16,8 +18,10 @@ _All happy requests are alike; each unhappy request is unhappy in its own way_.
     - `PropagateError`
     - `ToStatus(std::error_code)`
 - Monadic API for `Result<T>`:
-  - `Map`
-  - `Recover`
+  - Combinators:
+    - `Map`
+    - `Recover`
+  - [Mappers](fallible/result/mappers.hpp)
 
 [Examples](examples/main.cpp)
 
