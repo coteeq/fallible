@@ -378,13 +378,25 @@ TEST_SUITE(Result) {
     }
 
     {
-      // Identity
-      auto result = Ok(7).Map([]() {
+      // VoidMapper
+
+      Result<int> result = Ok().Map([]() -> int {
         std::cout << "Hi" << std::endl;
+        return 7;
       });
 
       ASSERT_TRUE(result.IsOk());
       ASSERT_EQ(*result, 7);
+    }
+
+    {
+      // Worker
+
+      Result<wheels::Unit> result = Ok().Map([]() {
+        std::cout << "Worker" << std::endl;
+      });
+
+      ASSERT_TRUE(result.IsOk());
     }
   }
 

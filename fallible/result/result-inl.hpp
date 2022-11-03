@@ -141,13 +141,42 @@ Status Result<T>::Map(F eater) && {
 
 //////////////////////////////////////////////////////////////////////
 
+// Void
+
+// void -> T
+template <typename T>
+template <VoidMapper F>
+auto Result<T>::Map(F mapper) && {
+  static_assert(std::same_as<T, wheels::Unit>);
+
+  auto unit_mapper = [mapper = std::move(mapper)](wheels::Unit) {
+    return mapper();
+  };
+  return std::move(*this).Map(std::move(unit_mapper));
+}
+
+// void -> void
+template <typename T>
+template <Worker F>
+Status Result<T>::Map(F worker) && {
+  static_assert(std::same_as<T, wheels::Unit>);
+
+  auto unit_mapper = [worker = std::move(worker)](wheels::Unit) {
+    worker();
+    return wheels::Unit{};
+  };
+  return std::move(*this).Map(std::move(unit_mapper));
+}
+
+//////////////////////////////////////////////////////////////////////
+
 // Identity mapper
 
 template <typename T>
-template <IdentityMapper F>
-Result<T> Result<T>::Map(F mapper) {
-  auto result_mapper = [mapper](Result<T> input) mutable {
-    mapper();
+template <Forwarder F>
+Result<T> Result<T>::Forward(F f) && {
+  auto result_mapper = [f = std::move(f)](Result<T> input) mutable {
+    f();
     return input;
   };
   return std::move(*this).DoMap(std::move(result_mapper));

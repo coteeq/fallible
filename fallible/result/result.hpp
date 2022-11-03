@@ -262,8 +262,16 @@ class [[nodiscard]] Result {
   template <ResultEater<T> F>
   Status Map(F eater) &&;
 
-  template <IdentityMapper F>
-  Result<T> Map(F mapper);
+  // void -> T
+  template <VoidMapper F>
+  auto Map(F mapper) &&;
+
+  // void -> void
+  template <Worker F>
+  Status Map(F worker) &&;
+
+  template <Forwarder F>
+  Result<T> Forward(F f) &&;
 
   Status JustStatus() &&;
 

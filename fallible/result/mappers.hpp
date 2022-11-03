@@ -60,12 +60,31 @@ concept ResultEater = requires (F mapper, Result<T> value) {
 template <typename F, typename T>
 concept ValueMapper = ValueHandler<F, T> && !FaultyMapper<F, T> && !ValueEater<F, T>;
 
-// IdentityMapper
+// Forwarder
 
 template <typename F>
-concept IdentityMapper = requires (F mapper) {
-  { mapper() } -> std::same_as<void>;
+concept Forwarder = requires (F f) {
+  { f() } -> std::same_as<void>;
 };
+
+// Produces some side effect
+
+template <typename F>
+concept Worker = requires (F worker) {
+  { worker() } -> std::same_as<void>;
+};
+
+// Unit
+
+// UnitMapper: void -> T != void
+
+template <typename F>
+concept VoidConsumer = requires (F fun) {
+  fun();
+};
+
+template <typename F>
+concept VoidMapper = VoidConsumer<F> && !Worker<F>;
 
 // clang-format on
 
