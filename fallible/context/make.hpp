@@ -2,8 +2,6 @@
 
 #include <fallible/context/context.hpp>
 
-#include <fallible/context/attrs.hpp>
-
 namespace fallible {
 
 namespace detail {
