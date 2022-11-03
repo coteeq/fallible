@@ -60,10 +60,10 @@ concept ResultEater = requires (F mapper, Result<T> value) {
 template <typename F, typename T>
 concept ValueMapper = ValueHandler<F, T> && !FaultyMapper<F, T> && !ValueEater<F, T>;
 
-// Forwarder
+// Hook
 
 template <typename F>
-concept Forwarder = requires (F f) {
+concept Hook = requires (F f) {
   { f() } -> std::same_as<void>;
 };
 

@@ -173,10 +173,10 @@ Status Result<T>::Map(F worker) && {
 // Identity mapper
 
 template <typename T>
-template <Forwarder F>
-Result<T> Result<T>::Forward(F f) && {
-  auto result_mapper = [f = std::move(f)](Result<T> input) mutable {
-    f();
+template <Hook F>
+Result<T> Result<T>::Forward(F hook) && {
+  auto result_mapper = [hook = std::move(hook)](Result<T> input) mutable {
+    hook();
     return input;
   };
   return std::move(*this).DoMap(std::move(result_mapper));

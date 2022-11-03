@@ -270,8 +270,8 @@ class [[nodiscard]] Result {
   template <Worker F>
   Status Map(F worker) &&;
 
-  template <Forwarder F>
-  Result<T> Forward(F f) &&;
+  template <Hook F>
+  Result<T> Forward(F hook) &&;
 
   Status JustStatus() &&;
 
