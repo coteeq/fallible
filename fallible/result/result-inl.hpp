@@ -149,7 +149,7 @@ template <VoidMapper F>
 auto Result<T>::Map(F mapper) && {
   static_assert(std::same_as<T, wheels::Unit>);
 
-  auto unit_mapper = [mapper = std::move(mapper)](wheels::Unit) {
+  auto unit_mapper = [mapper = std::move(mapper)](wheels::Unit) mutable {
     return mapper();
   };
   return std::move(*this).Map(std::move(unit_mapper));
@@ -161,7 +161,7 @@ template <Worker F>
 Status Result<T>::Map(F worker) && {
   static_assert(std::same_as<T, wheels::Unit>);
 
-  auto unit_mapper = [worker = std::move(worker)](wheels::Unit) {
+  auto unit_mapper = [worker = std::move(worker)](wheels::Unit) mutable {
     worker();
     return wheels::Unit{};
   };
