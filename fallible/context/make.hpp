@@ -2,7 +2,7 @@
 
 #include <fallible/context/context.hpp>
 
-#include <fallible/context/tags.hpp>
+#include <fallible/context/attrs.hpp>
 
 namespace fallible {
 
@@ -34,8 +34,8 @@ class ContextBuilder {
     return Location(source);
   }
 
-  Builder& AddTag(std::string key, std::string value) {
-    tags_.insert_or_assign(key, value);
+  Builder& Attr(std::string key, std::string value) {
+    attrs_.insert_or_assign(std::move(key), std::move(value));
     return *this;
   }
 
@@ -52,7 +52,7 @@ class ContextBuilder {
   std::string domain_ = "?";
   wheels::SourceLocation source_;
 
-  ContextTags tags_;
+  Attrs attrs_;
 };
 
 }  // namespace detail

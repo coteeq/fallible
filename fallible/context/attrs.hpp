@@ -4,6 +4,6 @@
 
 namespace fallible {
 
-using ContextTags = std::map<std::string, std::string>;
+using Attrs = std::map<std::string, std::string>;
 
 }  // namespace fallible

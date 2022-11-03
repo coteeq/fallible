@@ -2,7 +2,7 @@ add_library(fallible
 		context/context.hpp
 		context/context.cpp
 		context/make.hpp
-		context/tags.hpp
+		context/attrs.hpp
 		error/codes.hpp
 		error/codes.cpp
 		error/error.hpp

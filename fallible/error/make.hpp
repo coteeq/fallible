@@ -20,7 +20,7 @@ class [[nodiscard]] ErrorBuilder {
   ErrorBuilder& Reason(std::string descr);
   ErrorBuilder& Location(wheels::SourceLocation source);
   ErrorBuilder& Location(std::string source);
-  ErrorBuilder& AddTag(std::string_view key, std::string value);
+  ErrorBuilder& Attr(std::string key, std::string value);
   ErrorBuilder& AddSubError(Error e);
 
   Error Done();

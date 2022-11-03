@@ -61,12 +61,12 @@ std::string Error::Describe() const {
       << ", reason = '" << Reason() << "'"
       << ", origin = " << SourceLocation();
 
-  const auto& tags = Tags();
+  const auto& attrs = Attrs();
 
-  if (!tags.empty()) {
-    out << ", context = {";
+  if (!attrs.empty()) {
+    out << ", attrs = {";
     size_t index = 0;
-    for (const auto& [k, v] : tags) {
+    for (const auto& [k, v] : attrs) {
       if (index > 0) {
         out << ", ";
       }
@@ -87,14 +87,14 @@ nlohmann::json Error::AsJson() const {
     {"source", SourceLocationToJson(context_.Source())}
   };
 
-  const auto& tags = context_.Tags();
+  const auto& attrs = context_.Attrs();
 
-  if (!tags.empty()) {
-    nlohmann::json tags_json = {};
-    for (const auto& [k, v] : tags) {
-      tags_json[k] = v;
+  if (!attrs.empty()) {
+    nlohmann::json attrs_json = {};
+    for (const auto& [k, v] : attrs) {
+      attrs_json[k] = v;
     }
-    context_json.push_back({"tags", tags_json});
+    context_json.push_back({"attrs", attrs_json});
   }
 
   std::vector<nlohmann::json> sub_errors_json;
@@ -115,10 +115,10 @@ Error Error::FromRepr(nlohmann::json repr) {
       .Reason(repr["context"]["reason"])
       .Location(SourceLocationFromJson(repr["context"]["source"]));
 
-  if (repr["context"].contains("tags")) {
-    auto tags = repr["context"]["tags"];
-    for (const auto& [k, v] : tags.items()) {
-      builder.AddTag(k, v);
+  if (repr["context"].contains("attrs")) {
+    auto attrs = repr["context"]["attrs"];
+    for (const auto& [k, v] : attrs.items()) {
+      builder.Attr(k, v);
     }
   }
 

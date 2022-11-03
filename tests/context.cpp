@@ -10,7 +10,7 @@ TEST_SUITE(Context) {
       .Domain("Test")
       .Reason("Reason")
       .Location(source)
-      .AddTag("key", "value")
+      .Attr("key", "value")
       .Done();
 
     ASSERT_EQ(ctx.Domain(), "Test");
@@ -20,7 +20,7 @@ TEST_SUITE(Context) {
     std::cout << loc.Line();
     ASSERT_EQ(loc.Line(), 7);
 
-    auto tags = ctx.Tags();
-    ASSERT_EQ(tags.size(), 1);
+    auto attrs = ctx.Attrs();
+    ASSERT_EQ(attrs.size(), 1);
   }
 }

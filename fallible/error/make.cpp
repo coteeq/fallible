@@ -29,8 +29,8 @@ ErrorBuilder& ErrorBuilder::AddSubError(Error e) {
   return *this;
 }
 
-ErrorBuilder& ErrorBuilder::AddTag(std::string_view key, std::string value) {
-  context_.AddTag(std::string(key), value);
+ErrorBuilder& ErrorBuilder::Attr(std::string key, std::string value) {
+  context_.Attr(std::move(key), std::move(value));
   return *this;
 }
 

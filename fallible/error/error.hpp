@@ -39,8 +39,12 @@ class Error {
 
   Error SubError() const;
 
-  const ContextTags& Tags() const {
-    return context_.Tags();
+  const Attrs& Attrs() const {
+    return context_.Attrs();
+  }
+
+  void AddAttr(std::string key, std::string value) {
+    context_.AddAttr(std::move(key), std::move(value));
   }
 
   std::string Describe() const;
