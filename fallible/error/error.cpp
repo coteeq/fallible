@@ -73,6 +73,7 @@ std::string Error::Describe() const {
       out << k << " = " << v;
       ++index;
     }
+    out << "}" << std::endl;
   }
 
   return out.str();
