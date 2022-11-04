@@ -55,7 +55,7 @@ class Error {
 
  private:
   int32_t code_;
-  Context context_;
+  class Context context_;
   std::vector<Error> sub_errors_;
 };
 
