@@ -15,7 +15,7 @@ class Error {
     return code_;
   }
 
-  const Context& context() const {
+  const Context& Context() const {
     return context_;
   }
 
