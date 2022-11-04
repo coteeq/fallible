@@ -1,7 +1,5 @@
 #pragma once
 
-#include <nlohmann/json.hpp>
-
 #include <fallible/error/fwd.hpp>
 #include <fallible/context/context.hpp>
 
@@ -51,10 +49,6 @@ class Error {
 
   // TODO: Cancellation / errors
   bool IsCancelled() const;
-
-  nlohmann::json AsJson() const;
-
-  static Error FromRepr(nlohmann::json repr);
 
  private:
   Error(detail::ErrorBuilder&);

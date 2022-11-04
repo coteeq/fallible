@@ -1,18 +1,23 @@
 #include <fallible/result/result.hpp>
 #include <fallible/result/make.hpp>
 
+#include <cassert>
+
 //////////////////////////////////////////////////////////////////////
 
 using fallible::ErrorCodes;
 
-// Error = code [+ domain] [+ reason] [+ location] [+ context]
+// Context = domain + reason + source + attrs
+using fallible::Context;
+// Error = code + Context
 using fallible::Error;
 // Result<T> = Error | value of type T
 using fallible::Result;
 
+// Context constructor
+using fallible::Ctx;
 // Error constructor
 using fallible::Err;
-
 // Result constructors
 using fallible::Ok;
 using fallible::PropagateError;
@@ -29,6 +34,8 @@ Result<std::string> Bar() {
       Err(ErrorCodes::Unknown)
           .Domain("Canonical")
           .Reason("Something went wrong")
+          .Attr("key1", "value1")
+          .Attr("key2", "value2")
           .Done());
 }
 
@@ -53,7 +60,7 @@ int main() {
 
   // #2: Ignore result
 
-  Bar();  // Compiler warning (or error with -werror flag): Result ignored
+  Bar().Ignore();  // Compiler warning (or error with -werror flag): Result ignored
 
   // #3: Intentionally ignore result
 
@@ -71,7 +78,7 @@ int main() {
     } else {
       auto error = result.Error();
       // Or use error.GetCode(), error.GetReason() etc
-      std::cout << "Bar() -> " << error.AsJson().dump(1, ' ') << std::endl;
+      std::cout << "Bar() -> " << error.Describe() << std::endl;
     }
   }
 

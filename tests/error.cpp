@@ -42,20 +42,10 @@ TEST_SUITE(Error) {
 
     auto error = builder.Done();
 
-    std::cout << error.AsJson().dump(1, ' ') << std::endl;
+    std::cout << error.Describe() << std::endl;
 
     auto sub_error = error.SubError();
 
     ASSERT_EQ(sub_error.Code(), 123);
-  }
-
-  SIMPLE_TEST(ToJson) {
-    auto json = TimedOut().AsJson();
-
-    ASSERT_EQ(json["code"].get<int32_t>(), ErrorCodes::TimedOut);
-    ASSERT_EQ(json["context"]["reason"].get<std::string>(), "Operation timed out");
-    ASSERT_TRUE(json["context"].contains("source"));
-
-    std::cout << "json = " << json << std::endl;
   }
 }
