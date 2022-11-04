@@ -88,4 +88,4 @@ concept VoidMapper = VoidConsumer<F> && !Worker<F>;
 
 // clang-format on
 
-}  // namespace await::futures
+}  // namespace fallible
