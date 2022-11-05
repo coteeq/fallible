@@ -89,7 +89,7 @@ class [[nodiscard]] Result {
     return has_value_;
   }
 
-  bool HasError() const {
+  bool Failed() const {
     return !IsOk();
   }
 

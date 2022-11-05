@@ -98,7 +98,7 @@ TEST_SUITE(Result) {
 
     auto result = Result<TestClass>::Ok(kMessage);
     ASSERT_TRUE(result.IsOk());
-    ASSERT_FALSE(result.HasError());
+    ASSERT_FALSE(result.Failed());
     result.ThrowIfError();  // Nothing happens
 
     ASSERT_EQ(result.ValueUnsafe().Message(), kMessage);
@@ -134,7 +134,7 @@ TEST_SUITE(Result) {
     auto result = Result<TestClass>::Fail(TimedOut());
 
     ASSERT_FALSE(result.IsOk());
-    ASSERT_TRUE(result.HasError());
+    ASSERT_TRUE(result.Failed());
 
     int32_t error_code = result.ErrorCode();
     ASSERT_EQ(error_code, ErrorCodes::TimedOut);
@@ -189,7 +189,7 @@ TEST_SUITE(Result) {
     {
       // Ok
       auto status = Ok();
-      ASSERT_FALSE(status.HasError());
+      ASSERT_FALSE(status.Failed());
       ASSERT_TRUE(status.IsOk());
       status.ThrowIfError();  // Nothing happens
     }
@@ -197,7 +197,7 @@ TEST_SUITE(Result) {
     {
       // Fail
       Status err = Fail(TimedOut());
-      ASSERT_TRUE(err.HasError());
+      ASSERT_TRUE(err.Failed());
       //    ASSERT_THROW(err_result.ThrowIfError(), std::system_error);
 
       ASSERT_EQ(err.ErrorCode(), ErrorCodes::TimedOut);
@@ -326,7 +326,7 @@ TEST_SUITE(Result) {
   SIMPLE_TEST(NotSupported) {
     Result<int> result = fallible::NotSupported();
 
-    ASSERT_TRUE(result.HasError());
+    ASSERT_TRUE(result.Failed());
     ASSERT_TRUE(result.MatchErrorCode(ErrorCodes::NotSupported));
   }
 
@@ -408,7 +408,7 @@ TEST_SUITE(Result) {
         throw std::runtime_error("Failed to increment");
       });
 
-      ASSERT_TRUE(result.HasError());
+      ASSERT_TRUE(result.Failed());
       auto error = result.Error();
       std::cout << error.Reason() << std::endl;
     }
@@ -462,7 +462,7 @@ TEST_SUITE(Result) {
 
   SIMPLE_TEST(EatResult) {
     auto status = Fail(TimedOut()).As<int>().Map([](Result<int> result) {
-      ASSERT_TRUE(result.HasError());
+      ASSERT_TRUE(result.Failed());
     });
 
     ASSERT_TRUE(status.IsOk());

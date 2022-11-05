@@ -107,7 +107,7 @@ int main() {
                           return value + 1;
                         });
 
-      assert(result.HasError());
+      assert(result.Failed());
       std::cout << "Foo.Throw.Map -> Error" << std::endl;
     }
 
