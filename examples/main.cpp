@@ -77,7 +77,7 @@ int main() {
       std::cout << "Bar() -> " << *result << std::endl;
     } else {
       auto error = result.Error();
-      // Or use error.GetCode(), error.GetReason() etc
+      // Or use error.Code(), error.Reason() etc
       std::cout << "Bar() -> " << error.Describe() << std::endl;
     }
   }
