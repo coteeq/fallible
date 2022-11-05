@@ -60,11 +60,11 @@ int main() {
 
   // #2: Ignore result
 
-  Bar().Ignore();  // Compiler warning (or error with -werror flag): Result ignored
+  Bar();  // Compiler warning (or error with -werror flag): Result ignored
 
   // #3: Intentionally ignore result
 
-  Bar().Ignore();  // Intentionally suppress compiler warning
+  Bar().Ignore("TODO: Fix later");  // Intentionally suppress compiler warning
 
   // #4: Check for success, then unwrap
 

@@ -140,7 +140,7 @@ class [[nodiscard]] Result {
     return std::move(value_);
   }
 
-  void Ignore() {
+  void Ignore(std::string_view /*excuse*/) {
     // No-op
   }
 
