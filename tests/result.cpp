@@ -146,9 +146,9 @@ TEST_SUITE(Result) {
   SIMPLE_TEST(Ignore) {
     // No warnings here!
 
-    MakeVector(7).Ignore();
-    MakeError().Ignore();
-    Ok().Ignore();
+    MakeVector(7).Ignore("Test");
+    MakeError().Ignore("Test");
+    Ok().Ignore("Test");
   }
 
   SIMPLE_TEST(MatchErrorCode) {
