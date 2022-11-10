@@ -20,6 +20,7 @@ class Context {
   wheels::SourceLocation Source() const;
   const Attrs& Attrs() const;
 
+  bool HasAttr(const std::string& key) const;
   void AddAttr(std::string key, std::string value);
 
  private:

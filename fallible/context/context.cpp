@@ -39,6 +39,10 @@ const Attrs& Context::Attrs() const {
   return data_->attrs;
 }
 
+bool Context::HasAttr(const std::string& key) const {
+  return data_->attrs.contains(key);
+}
+
 void Context::AddAttr(std::string key, std::string value) {
   data_->attrs.insert_or_assign(std::move(key), std::move(value));
 }

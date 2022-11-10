@@ -23,4 +23,21 @@ TEST_SUITE(Context) {
     auto attrs = ctx.Attrs();
     ASSERT_EQ(attrs.size(), 1);
   }
+
+  SIMPLE_TEST(Attrs) {
+    auto source = wheels::SourceLocation::Current();
+
+    auto ctx = fallible::Ctx()
+                   .Domain("Test")
+                   .Reason("Reason")
+                   .Location(source)
+                   .Done();
+
+    ctx.AddAttr("key", "value");
+    ctx.AddAttr("flag", "true");
+
+    ASSERT_TRUE(ctx.HasAttr("key"));
+    ASSERT_TRUE(ctx.HasAttr("flag"));
+    ASSERT_FALSE(ctx.HasAttr("missing"));
+  }
 }
