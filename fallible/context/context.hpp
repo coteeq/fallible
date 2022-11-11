@@ -6,6 +6,7 @@
 #include <wheels/support/source_location.hpp>
 
 #include <string>
+#include <memory>
 
 namespace fallible {
 
