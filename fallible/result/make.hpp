@@ -26,7 +26,9 @@ Result<T> Ok(const T& value) {
   return Result<T>::Ok(value);
 }
 
-Status Ok();
+inline Status Ok() {
+  return Status::Ok({});
+}
 
 ////////////////////////////////////////////////////////////
 

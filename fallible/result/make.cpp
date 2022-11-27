@@ -4,10 +4,6 @@
 
 namespace fallible {
 
-Status Ok() {
-  return Status::Ok({});
-}
-
 detail::Failure Fail(Error error) {
   return detail::Failure(std::move(error));
 }
