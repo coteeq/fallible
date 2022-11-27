@@ -107,35 +107,35 @@ class [[nodiscard]] Result {
 
   // Ignores value, panics on error
   // Usage: result.ExpectOk();
-  void ExpectOk(wheels::SourceLocation where = wheels::SourceLocation::Current()) {
+  void ExpectOk(wheels::SourceLocation where = wheels::Here()) {
     ExpectOkImpl(where, "Unexpected error");
   }
 
   // Ignores value, panics on error
   // Usage: result.ExpectOk("Something bad happens");
   void ExpectOk(const std::string& or_error,
-                wheels::SourceLocation where = wheels::SourceLocation::Current()) {
+                wheels::SourceLocation where = wheels::Here()) {
     ExpectOkImpl(where, or_error);
   }
 
-  T& ExpectValue(wheels::SourceLocation where = wheels::SourceLocation::Current())& {
+  T& ExpectValue(wheels::SourceLocation where = wheels::Here())& {
     ExpectOkImpl(where, "Unexpected error");
     return value_;
   }
 
-  T&& ExpectValue(wheels::SourceLocation where = wheels::SourceLocation::Current())&& {
+  T&& ExpectValue(wheels::SourceLocation where = wheels::Here())&& {
     ExpectOkImpl(where, "Unexpected error");
     return std::move(value_);
   }
 
   T& ExpectValueOr(const std::string& or_error,
-                 wheels::SourceLocation where = wheels::SourceLocation::Current())& {
+                 wheels::SourceLocation where = wheels::Here())& {
     ExpectOkImpl(where, or_error);
     return value_;
   }
 
   T&& ExpectValueOr(const std::string& or_error,
-                   wheels::SourceLocation where = wheels::SourceLocation::Current()) && {
+                   wheels::SourceLocation where = wheels::Here()) && {
     ExpectOkImpl(where, or_error);
     return std::move(value_);
   }
