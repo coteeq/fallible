@@ -13,6 +13,10 @@ class ContextBuilder {
 
   using Builder = ContextBuilder;
  public:
+  ContextBuilder(wheels::SourceLocation loc)
+      : location_(loc) {
+  }
+
   Builder& Reason(std::string descr) {
     reason_ = descr;
     return *this;
@@ -23,12 +27,12 @@ class ContextBuilder {
     return *this;
   }
 
-  Builder& Location(wheels::SourceLocation source) {
-    source_ = source;
+  Builder& Location(SourceLocation loc) {
+    location_ = std::move(loc);
     return *this;
   }
 
-  Builder& Here(wheels::SourceLocation source = wheels::SourceLocation::Current()) {
+  Builder& Here(wheels::SourceLocation source = wheels::Here()) {
     return Location(source);
   }
 
@@ -46,9 +50,9 @@ class ContextBuilder {
   }
 
  private:
-  std::string reason_ = "?";
-  std::string domain_ = "?";
-  wheels::SourceLocation source_;
+  std::string reason_;
+  std::string domain_;
+  SourceLocation location_;
 
   Attrs attrs_;
 };
@@ -57,8 +61,8 @@ class ContextBuilder {
 
 //////////////////////////////////////////////////////////////////////
 
-inline detail::ContextBuilder Ctx() {
-  return {};
+inline detail::ContextBuilder Ctx(wheels::SourceLocation loc = wheels::Here()) {
+  return {loc};
 }
 
 }  // namespace fallible

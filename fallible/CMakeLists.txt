@@ -1,4 +1,6 @@
 add_library(fallible
+		context/location.hpp
+		context/location.cpp
 		context/context.hpp
 		context/context.cpp
 		context/make.hpp

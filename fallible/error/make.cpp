@@ -4,9 +4,8 @@ namespace fallible {
 
 namespace detail {
 
-ErrorBuilder::ErrorBuilder(int32_t code, wheels::SourceLocation loc) {
-  code_ = code;
-  context_.Location(loc);
+ErrorBuilder::ErrorBuilder(int32_t code, wheels::SourceLocation loc)
+    : code_(code), context_(loc) {
 }
 
 ErrorBuilder& ErrorBuilder::Domain(std::string name) {

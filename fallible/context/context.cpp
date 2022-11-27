@@ -7,19 +7,12 @@ namespace fallible {
 struct Context::Data {
   std::string reason;
   std::string domain;
-  wheels::SourceLocation source;
-  ::fallible::Attrs attrs;
+  fallible::SourceLocation location;
+  fallible::Attrs attrs;
 };
 
 Context::Context(detail::ContextBuilder& builder) {
-  Data data;
-
-  // Fill
-  data.reason = builder.reason_;
-  data.domain = builder.domain_;
-  data.source = builder.source_;
-  data.attrs = builder.attrs_;
-
+  Data data{builder.reason_, builder.domain_, builder.location_, builder.attrs_};
   data_ = std::make_shared<Data>(std::move(data));
 }
 
@@ -31,8 +24,8 @@ std::string Context::Reason() const {
   return data_->reason;
 }
 
-wheels::SourceLocation Context::Source() const {
-  return data_->source;
+SourceLocation Context::SourceLocation() const {
+  return data_->location;
 }
 
 const Attrs& Context::Attrs() const {

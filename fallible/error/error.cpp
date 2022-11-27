@@ -29,6 +29,7 @@ bool Error::IsCancelled() const {
 
 std::string Error::Describe() const {
   std::stringstream out;
+
   out << "code = " << Code()
       << " (" << ErrorCodeName(Code()) << ")"
       << ", domain = " << Domain()

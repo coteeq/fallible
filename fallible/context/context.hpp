@@ -1,9 +1,8 @@
 #pragma once
 
 #include <fallible/context/fwd.hpp>
+#include <fallible/context/location.hpp>
 #include <fallible/context/attrs.hpp>
-
-#include <wheels/support/source_location.hpp>
 
 #include <string>
 #include <memory>
@@ -18,7 +17,7 @@ class Context {
  public:
   std::string Domain() const;
   std::string Reason() const;
-  wheels::SourceLocation Source() const;
+  SourceLocation SourceLocation() const;
   const Attrs& Attrs() const;
 
   bool HasAttr(const std::string& key) const;

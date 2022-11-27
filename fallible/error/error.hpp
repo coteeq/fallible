@@ -27,8 +27,8 @@ class Error {
     return context_.Reason();
   }
 
-  wheels::SourceLocation SourceLocation() const {
-    return context_.Source();
+  SourceLocation SourceLocation() const {
+    return context_.SourceLocation();
   }
 
   std::vector<Error> SubErrors() const {
