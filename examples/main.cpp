@@ -31,7 +31,7 @@ Result<int> Foo() {
 
 Result<std::string> Bar() {
   return Fail(
-      Err(ErrorCodes::Unknown)
+    fallible::err::Unknown()
           .Domain("Canonical")
           .Reason("Something went wrong")
           .Attr("key1", "value1")

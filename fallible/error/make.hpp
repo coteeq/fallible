@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fallible/error/error.hpp>
+#include <fallible/error/codes.hpp>
 
 #include <fallible/context/make.hpp>
 
@@ -42,5 +43,52 @@ class [[nodiscard]] ErrorBuilder {
 inline detail::ErrorBuilder Err(int32_t code, wheels::SourceLocation loc = wheels::SourceLocation::Current()) {
   return detail::ErrorBuilder(code, loc);
 }
+
+//////////////////////////////////////////////////////////////////////
+
+/*
+ * enum _ {
+Ok = 0,
+Unknown = 1,
+Disconnected = 2,
+Invalid = 3,
+Cancelled = 4,
+Aborted = 5,
+TimedOut = 6,
+NotFound = 7,
+AlreadyExists = 8,
+Unauthorized = 9,
+Unavailable = 10,
+ResourceExhausted = 11,
+Internal = 12,
+NotSupported = 13,
+};
+ */
+
+namespace err {
+
+#define MAKE_ERR(name) \
+inline detail::ErrorBuilder name() { \
+  return Err(ErrorCodes::name); \
+}
+
+MAKE_ERR(Ok)
+MAKE_ERR(Unknown)
+MAKE_ERR(Disconnected)
+MAKE_ERR(Invalid)
+MAKE_ERR(Cancelled)
+MAKE_ERR(Aborted)
+MAKE_ERR(TimedOut)
+MAKE_ERR(NotFound)
+MAKE_ERR(AlreadyExists)
+MAKE_ERR(Unauthorized)
+MAKE_ERR(Unavailable)
+MAKE_ERR(ResourceExhausted)
+MAKE_ERR(Internal)
+MAKE_ERR(NotSupported)
+
+#undef MAKE_ERR
+
+}  // namespace err
 
 }  // namespace fallible
