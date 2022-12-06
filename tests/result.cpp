@@ -378,6 +378,36 @@ TEST_SUITE(Result) {
     }
 
     {
+        // Resilient
+
+      {
+        auto result = Ok(7).Map([](Result<int> input) {
+          if (input.IsOk()) {
+            return *input;
+          } else {
+            return 42;
+          }
+        });
+
+        ASSERT_TRUE(result.IsOk());
+        ASSERT_EQ(*result, 7);
+      }
+
+      {
+        auto result = Fail(TimedOut()).As<int>().Map([](Result<int> input) {
+          if (input.IsOk()) {
+            return *input;
+          } else {
+            return 42;
+          }
+        });
+
+        ASSERT_TRUE(result.IsOk());
+        ASSERT_EQ(*result, 42);
+      }
+    }
+
+    {
       // VoidMapper
 
       Result<int> result = Ok().Map([]() -> int {

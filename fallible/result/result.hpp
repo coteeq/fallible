@@ -238,6 +238,10 @@ class [[nodiscard]] Result {
   template <ResultMapper<T> F>
   auto Map(F mapper) &&;
 
+  // Result<T> -> U
+  template <ResilientMapper<T> F>
+  auto Map(F mapper) &&;
+
   // T -> U
   template <ValueMapper<T> F>
   auto Map(F mapper) &&;

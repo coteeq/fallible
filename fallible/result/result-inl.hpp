@@ -41,6 +41,22 @@ auto Result<T>::Map(F mapper) && {
 
 //////////////////////////////////////////////////////////////////////
 
+// Resilient mapper
+
+template <typename T>
+template <ResilientMapper<T> F>
+auto Result<T>::Map(F mapper) && {
+  using U = std::invoke_result_t<F, Result<T>>;
+
+  auto result_mapper = [mapper = std::move(mapper)](Result<T> input) mutable -> Result<U> {
+    return Result<U>::Ok(mapper(input));
+  };
+
+  return std::move(*this).DoMap(std::move(result_mapper));
+}
+
+//////////////////////////////////////////////////////////////////////
+
 // Value mapper
 
 template <typename T>

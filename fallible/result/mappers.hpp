@@ -19,6 +19,13 @@ concept ValueHandler = requires (F f, T value) {
   f(std::move(value));
 };
 
+// ValueHandler
+
+template <typename F, typename T>
+concept ResultHandler = requires (F f, Result<T> result) {
+  f(std::move(result));
+};
+
 // Result mapper: Result<T> -> Result<U>
 
 template <typename F, typename T>
@@ -53,6 +60,13 @@ template <typename F, typename T>
 concept ResultEater = requires (F mapper, Result<T> value) {
   { mapper(std::move(value)) } -> std::same_as<void>;
 };
+
+// Resilient mapper: Result<T> -> U
+
+template <typename F, typename T>
+concept ResilientMapper = ResultHandler<F,T> &&
+                          !ResultMapper<F,T> &&
+                          !ResultEater<F,T>;
 
 // ValueMapper: T -> U
 
