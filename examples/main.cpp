@@ -41,10 +41,11 @@ Result<std::string> Bar() {
 
 Result<int> Baz() {
   auto result = Bar();
+
   if (result.IsOk()) {
     return Ok(7);
   } else {
-    // Automagically adapts to different value type
+    // Synonym for Fail(result.Error())
     return PropagateError(result);
   }
 }
@@ -60,7 +61,7 @@ int main() {
 
   // #2: Ignore result
 
-  Bar();  // Compiler warning (or error with -werror flag): Result ignored
+  Bar();  // Result ignored -> compiler warning (or error with -Werror flag)
 
   // #3: Intentionally ignore result
 
@@ -72,12 +73,12 @@ int main() {
     auto result = Bar();
 
     if (result.IsOk()) {
-      // Access value via * operator
+      // Access value via operator *
       // Behavior is undefined if result holds an error instead of a value
       std::cout << "Bar() -> " << *result << std::endl;
     } else {
       auto error = result.Error();
-      // Or use error.Code(), error.Reason() etc
+      // Or use error.Code(), error.Reason(), etc
       std::cout << "Bar() -> " << error.Describe() << std::endl;
     }
   }
