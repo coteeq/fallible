@@ -46,7 +46,7 @@ inline detail::ErrorBuilder Err(int32_t code, wheels::SourceLocation loc = wheel
 
 //////////////////////////////////////////////////////////////////////
 
-namespace err {
+namespace errors {
 
 #define MAKE_ERR(name) \
 inline detail::ErrorBuilder name() { \
@@ -70,6 +70,6 @@ MAKE_ERR(NotSupported)
 
 #undef MAKE_ERR
 
-}  // namespace err
+}  // namespace errors
 
 }  // namespace fallible

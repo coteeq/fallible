@@ -31,8 +31,8 @@ Result<int> Foo() {
 
 Result<std::string> Bar() {
   return Fail(
-    fallible::err::Unknown()
-          .Domain("Canonical")
+    fallible::errors::Unknown()
+          .Domain("Example")
           .Reason("Something went wrong")
           .Attr("key1", "value1")
           .Attr("key2", "value2")
