@@ -16,7 +16,7 @@ TEST_SUITE(Context) {
     ASSERT_EQ(ctx.Domain(), "Test");
     ASSERT_EQ(ctx.Reason(), "Reason");
 
-    auto loc = ctx.Source();
+    auto loc = ctx.SourceLocation();
     std::cout << loc.Line();
     ASSERT_EQ(loc.Line(), 7);
 
