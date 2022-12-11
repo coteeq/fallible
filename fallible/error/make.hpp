@@ -49,8 +49,9 @@ inline detail::ErrorBuilder Err(int32_t code, wheels::SourceLocation loc = wheel
 namespace errors {
 
 #define MAKE_ERR(name) \
-inline detail::ErrorBuilder name() { \
-  return Err(ErrorCodes::name); \
+inline detail::ErrorBuilder name(wheels::SourceLocation call_site = \
+                                       wheels::SourceLocation::Current()) { \
+  return Err(ErrorCodes::name).Location(call_site); \
 }
 
 MAKE_ERR(Ok)
