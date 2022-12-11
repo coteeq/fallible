@@ -9,7 +9,7 @@ _All happy requests are alike; each unhappy request is unhappy in its own way_.
   - `Error` = `int32_t` code + `Context`
   - `Result<T>` = `T` + `Error`
     - `Status` = `Result<Unit>`
-- Constructors (`make`)
+- Constructors
   - `Context`: `Ctx`
   - `Error`: `Err`
   - `Result` / `Status`:
