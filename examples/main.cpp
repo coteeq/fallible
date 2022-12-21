@@ -61,11 +61,11 @@ int main() {
 
   // #2: Ignore result
 
-  Bar();  // Result ignored -> compiler warning (or error with -Werror flag)
+  Bar();  // Compiler warning (or error with -Werror flag)
 
-  // #3: Intentionally ignore result
+  // #3: Explicitly ignore result
 
-  Bar().Ignore("TODO: Fix later");  // Intentionally suppress compiler warning
+  Bar().Ignore("TODO: Fix later");  // Suppress compiler warning
 
   // #4: Check for success, then unwrap
 
@@ -84,6 +84,7 @@ int main() {
   }
 
   // #5: Monadic API
+
   {
     {
       auto result = Foo()

@@ -48,28 +48,28 @@ inline detail::ErrorBuilder Err(int32_t code, wheels::SourceLocation loc = wheel
 
 namespace errors {
 
-#define MAKE_ERR(name) \
+#define MAKE_ERROR(name) \
 inline detail::ErrorBuilder name(wheels::SourceLocation call_site = \
                                        wheels::SourceLocation::Current()) { \
   return Err(ErrorCodes::name).Location(call_site); \
 }
 
-MAKE_ERR(Ok)
-MAKE_ERR(Unknown)
-MAKE_ERR(Disconnected)
-MAKE_ERR(Invalid)
-MAKE_ERR(Cancelled)
-MAKE_ERR(Aborted)
-MAKE_ERR(TimedOut)
-MAKE_ERR(NotFound)
-MAKE_ERR(AlreadyExists)
-MAKE_ERR(Unauthorized)
-MAKE_ERR(Unavailable)
-MAKE_ERR(ResourceExhausted)
-MAKE_ERR(Internal)
-MAKE_ERR(NotSupported)
+MAKE_ERROR(Ok)
+MAKE_ERROR(Unknown)
+MAKE_ERROR(Disconnected)
+MAKE_ERROR(Invalid)
+MAKE_ERROR(Cancelled)
+MAKE_ERROR(Aborted)
+MAKE_ERROR(TimedOut)
+MAKE_ERROR(NotFound)
+MAKE_ERROR(AlreadyExists)
+MAKE_ERROR(Unauthorized)
+MAKE_ERROR(Unavailable)
+MAKE_ERROR(ResourceExhausted)
+MAKE_ERROR(Internal)
+MAKE_ERROR(NotSupported)
 
-#undef MAKE_ERR
+#undef MAKE_ERROR
 
 }  // namespace errors
 
