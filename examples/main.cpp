@@ -30,6 +30,7 @@ Result<int> Foo() {
 }
 
 Result<std::string> Bar() {
+  // NB: Fail automagically deduce value type (string in this particular case)
   return Fail(
     fallible::errors::Unknown()
           .Domain("Example")
@@ -65,7 +66,10 @@ int main() {
 
   // #3: Explicitly ignore result
 
-  Bar().Ignore("TODO: Fix later");  // Suppress compiler warning
+  Bar().Ignore(/*excuse=*/"Best-effort");  // Suppress compiler warning
+
+  // Alternative form
+  Bar().TODO("Handle error");
 
   // #4: Check for success, then unwrap
 

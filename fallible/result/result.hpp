@@ -105,6 +105,8 @@ class [[nodiscard]] Result {
     }
   }
 
+  // Expect
+
   // Ignores value, panics on error
   // Usage: result.ExpectOk();
   void ExpectOk(wheels::SourceLocation where = wheels::Here()) {
@@ -140,7 +142,13 @@ class [[nodiscard]] Result {
     return std::move(value_);
   }
 
+  // Ignore
+
   void Ignore(std::string_view /*excuse*/) {
+    // No-op
+  }
+
+  void TODO(std::string_view /*fix*/) {
     // No-op
   }
 

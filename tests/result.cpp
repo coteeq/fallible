@@ -149,6 +149,8 @@ TEST_SUITE(Result) {
     MakeVector(7).Ignore("Test");
     MakeError().Ignore("Test");
     Ok().Ignore("Test");
+
+    MakeError().TODO("Handle error");
   }
 
   SIMPLE_TEST(MatchErrorCode) {
