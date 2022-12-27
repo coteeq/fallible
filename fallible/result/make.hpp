@@ -11,19 +11,11 @@ namespace fallible {
 
 ////////////////////////////////////////////////////////////
 
+// Success
+
 template <typename T>
-Result<T> Ok(T&& value) {
+Result<T> Ok(T value) {
   return Result<T>::Ok(std::move(value));
-}
-
-template <typename T>
-Result<T> Ok(T& value) {
-  return Result<T>::Ok(value);
-}
-
-template <typename T>
-Result<T> Ok(const T& value) {
-  return Result<T>::Ok(value);
 }
 
 inline Status Ok() {
@@ -39,20 +31,24 @@ class [[nodiscard]] Failure {
   explicit Failure(Error error) : error_(std::move(error)) {
   }
 
+  // Non-copyable
   Failure(const Failure&) = delete;
   Failure& operator=(const Failure&) = delete;
 
+  // Non-movable
   Failure(Failure&&) = delete;
   Failure& operator=(Failure&&) = delete;
 
-  template <typename T>
-  Result<T> As() {
-    return Result<T>::Fail(std::move(error_));
-  }
-
+  // Implicit conversion to Result<T>
   template <typename T>
   operator Result<T>() {
     return As<T>();
+  }
+
+  // Explicit conversion to Result<T>
+  template <typename T>
+  Result<T> As() {
+    return Result<T>::Fail(std::move(error_));
   }
 
  private:
@@ -60,6 +56,17 @@ class [[nodiscard]] Failure {
 };
 
 }  // namespace detail
+
+/*
+ * Convert Error to Result<T> automagically deducing value type T
+ *
+ * Example:
+ *
+ * fallible::Result<Widget> Foo() {
+ *   return fallible::Fail(
+ *      fallible::errors::ResourceExhausted());
+ * }
+ */
 
 detail::Failure Fail(Error error);
 
@@ -70,10 +77,10 @@ detail::Failure Fail(Error error);
  *
  * Example:
  *
- * Result<Widget> Foo() {
- *   Result<Gadget> result = Bar();
+ * fallible::Result<Widget> Foo() {
+ *   fallible::Result<Gadget> result = Bar();
  *   if (result.HasError()) {
- *     return PropagateError(result);
+ *     return fallible::PropagateError(result);
  *   }
  *   // Happy path goes here
  * }
@@ -86,10 +93,8 @@ detail::Failure PropagateError(const Result<T>& result) {
 
 ////////////////////////////////////////////////////////////
 
-// Convert std::error_code (error or success) to Status
-Status ToStatus(std::error_code error);
+// Erase value type to Unit
 
-// Erase value type
 template <typename T>
 Status JustStatus(const Result<T>& result) {
   if (result.IsOk()) {
@@ -98,6 +103,11 @@ Status JustStatus(const Result<T>& result) {
     return PropagateError(result);
   }
 }
+
+////////////////////////////////////////////////////////////
+
+// Convert std::error_code (error or success) to Status
+Status ToStatus(std::error_code error);
 
 ////////////////////////////////////////////////////////////
 

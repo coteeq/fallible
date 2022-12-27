@@ -2,9 +2,11 @@
 
 namespace fallible {
 
-// Do not wrap exception tagged with IgnoreThisException into Error
+// Do not wrap exceptions inherited from IgnoreThisException into Error
 // in Result::{Map,Recover}
 
-struct IgnoreThisException {};
+struct IgnoreThisException {
+  //
+};
 
 }  // namespace fallible
