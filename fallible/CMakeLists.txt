@@ -18,13 +18,12 @@ add_library(fallible
 		rt/panic.hpp
 		rt/panic.cpp
 		rt/panicker.hpp
-		rt/panicker.cpp
 		rt/abort.hpp
 		rt/abort.cpp
 )
 
 # Dependencies
 
-target_link_libraries(fallible wheels fmt)
+target_link_libraries(fallible wheels compass fmt)
 
 target_include_directories(fallible PUBLIC ..)
