@@ -4,7 +4,7 @@
 
 namespace fallible {
 
-// NB: Can represent source location for different program
+// NB: Can represent source location for another program
 // on remote server => Allocates memory for file and function names
 
 //////////////////////////////////////////////////////////////////////

@@ -57,24 +57,24 @@ class [[nodiscard]] Result {
   // Moving
 
   Result(Result&& that) {
-    MoveImpl(std::move(that));
+    MoveFrom(std::move(that));
   }
 
   Result& operator=(Result&& that) {
     Destroy();
-    MoveImpl(std::move(that));
+    MoveFrom(std::move(that));
     return *this;
   }
 
   // Copying
 
   Result(const Result& that) {
-    CopyImpl(that);
+    CopyFrom(that);
   }
 
   Result& operator=(const Result& that) {
     Destroy();
-    CopyImpl(that);
+    CopyFrom(that);
   }
 
   // Dtor
@@ -307,7 +307,7 @@ class [[nodiscard]] Result {
         error_(std::move(error)) {
   }
 
-  void MoveImpl(Result&& that) {
+  void MoveFrom(Result&& that) {
     has_value_ = that.has_value_;
     if (has_value_) {
       new (&value_) T(std::move(that.value_));
@@ -316,7 +316,7 @@ class [[nodiscard]] Result {
     }
   }
 
-  void CopyImpl(const Result& that) {
+  void CopyFrom(const Result& that) {
     has_value_ = that.has_value_;
     if (has_value_) {
       new (&value_) T(that.value_);
@@ -342,6 +342,7 @@ class [[nodiscard]] Result {
   }
 
  private:
+  // Tagged union
   bool has_value_;
   union {
     T value_;
