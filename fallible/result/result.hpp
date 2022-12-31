@@ -13,6 +13,7 @@
 #include <fmt/core.h>
 
 #include <utility>
+#include <optional>
 
 /* References
  *
@@ -287,6 +288,14 @@ class [[nodiscard]] Result {
   Result<T> Forward(F hook) &&;
 
   Status JustStatus() &&;
+
+  // Optional
+
+  std::optional<T> ToOptional() &&;
+
+  operator std::optional<T>() && {
+    return std::move(*this).ToOptional();
+  }
 
  private:
   template <ResultMapper<T> F>

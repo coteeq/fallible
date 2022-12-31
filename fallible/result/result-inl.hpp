@@ -210,4 +210,15 @@ Status Result<T>::JustStatus() && {
   }
 }
 
+//////////////////////////////////////////////////////////////////////
+
+template <typename T>
+std::optional<T> Result<T>::ToOptional() && {
+  if (IsOk()) {
+    return std::move(ValueUnsafe());
+  } else {
+    return std::nullopt;
+  }
+}
+
 }  // namespace fallible

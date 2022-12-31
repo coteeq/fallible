@@ -499,5 +499,29 @@ TEST_SUITE(Result) {
 
     ASSERT_TRUE(status.IsOk());
   }
-}
 
+  SIMPLE_TEST(ToOptional) {
+    {
+      auto result = fallible::Ok(7);
+      auto opt = std::move(result).ToOptional();
+
+      ASSERT_TRUE(opt.has_value());
+      ASSERT_EQ(*opt, 7);
+    }
+
+    {
+      auto result = fallible::Fail(TimedOut()).As<int>();
+      auto opt = std::move(result).ToOptional();
+
+      ASSERT_FALSE(opt.has_value());
+    }
+  }
+
+  SIMPLE_TEST(OptionalImplicitCast) {
+    auto result = fallible::Ok(7);
+    std::optional<int> opt = std::move(result);
+
+    ASSERT_TRUE(opt.has_value());
+    ASSERT_EQ(*opt, 7);
+  }
+}
