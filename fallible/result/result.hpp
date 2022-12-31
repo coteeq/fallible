@@ -9,7 +9,8 @@
 #include <fallible/rt/panic.hpp>
 
 #include <wheels/support/unit.hpp>
-#include <wheels/support/string_builder.hpp>
+
+#include <fmt/core.h>
 
 #include <utility>
 
@@ -335,9 +336,7 @@ class [[nodiscard]] Result {
 
   void ExpectOkImpl(wheels::SourceLocation where, const std::string& or_error) {
     if (!IsOk()) {
-      rt::Panic(where, wheels::StringBuilder()
-                           << "Result::ExpectOk failed: " << or_error
-                           << " (" << error_.Describe() << ")");
+      rt::Panic(where, fmt::format("Result::ExpectOk failed: {} ({})", or_error, error_.Describe()));
     }
   }
 

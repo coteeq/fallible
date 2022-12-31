@@ -25,6 +25,6 @@ add_library(fallible
 
 # Dependencies
 
-target_link_libraries(fallible wheels)
+target_link_libraries(fallible wheels fmt)
 
 target_include_directories(fallible PUBLIC ..)
