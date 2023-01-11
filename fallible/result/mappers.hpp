@@ -26,6 +26,11 @@ concept ResultHandler = requires (F f, Result<T> result) {
   f(std::move(result));
 };
 
+template <typename F, typename T>
+concept ConstResultHandler = requires (F f, const Result<T>& result) {
+  f(std::move(result));
+};
+
 // Result mapper: Result<T> -> Result<U>
 
 template <typename F, typename T>
