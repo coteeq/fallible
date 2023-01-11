@@ -19,7 +19,7 @@ concept ValueHandler = requires (F f, T value) {
   f(std::move(value));
 };
 
-// ValueHandler
+// ResultHandler
 
 template <typename F, typename T>
 concept ResultHandler = requires (F f, Result<T> result) {
