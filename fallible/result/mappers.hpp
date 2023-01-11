@@ -12,6 +12,13 @@ namespace fallible {
 
 // clang-format off
 
+// EventHandler
+
+template <typename F>
+concept EventHandler = requires (F f) {
+  { f() } -> std::same_as<void>;
+};
+
 // ValueHandler
 
 template <typename F, typename T>
