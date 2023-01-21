@@ -14,6 +14,7 @@
 
 #include <utility>
 #include <optional>
+#include <string_view>
 
 /* References
  *
@@ -117,7 +118,7 @@ class [[nodiscard]] Result {
 
   // Ignores value, panics on error
   // Usage: result.ExpectOk("Something bad happens");
-  void ExpectOk(const std::string& or_error,
+  void ExpectOk(std::string_view or_error,
                 wheels::SourceLocation where = wheels::Here()) {
     ExpectOkImpl(where, or_error);
   }
@@ -132,13 +133,13 @@ class [[nodiscard]] Result {
     return std::move(value_);
   }
 
-  T& ExpectValueOr(const std::string& or_error,
+  T& ExpectValueOr(std::string_view or_error,
                  wheels::SourceLocation where = wheels::Here())& {
     ExpectOkImpl(where, or_error);
     return value_;
   }
 
-  T&& ExpectValueOr(const std::string& or_error,
+  T&& ExpectValueOr(std::string_view or_error,
                    wheels::SourceLocation where = wheels::Here()) && {
     ExpectOkImpl(where, or_error);
     return std::move(value_);
@@ -343,7 +344,7 @@ class [[nodiscard]] Result {
     }
   }
 
-  void ExpectOkImpl(wheels::SourceLocation where, const std::string& or_error) {
+  void ExpectOkImpl(wheels::SourceLocation where, std::string_view or_error) {
     if (!IsOk()) {
       rt::Panic(where, fmt::format("Result::ExpectOk failed: {} ({})", or_error, error_.Describe()));
     }
