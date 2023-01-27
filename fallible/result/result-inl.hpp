@@ -3,7 +3,7 @@
 #include <fallible/error/make.hpp>
 #include <fallible/result/ignore.hpp>
 
-#include <wheels/support/exception.hpp>
+#include <wheels/core/exception.hpp>
 
 namespace fallible {
 

@@ -3,7 +3,7 @@
 #include <fallible/error/codes.hpp>
 #include <fallible/error/make.hpp>
 
-#include <wheels/support/assert.hpp>
+#include <wheels/core/assert.hpp>
 
 #include <sstream>
 

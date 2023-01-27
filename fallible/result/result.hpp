@@ -8,7 +8,7 @@
 
 #include <fallible/rt/panic.hpp>
 
-#include <wheels/support/unit.hpp>
+#include <wheels/core/unit.hpp>
 
 #include <fmt/core.h>
 

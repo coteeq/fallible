@@ -1,6 +1,6 @@
 #include <fallible/rt/abort.hpp>
 
-#include <wheels/support/singleton.hpp>
+#include <wheels/core/singleton.hpp>
 
 #include <mutex>
 #include <iostream>
