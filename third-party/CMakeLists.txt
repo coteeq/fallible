@@ -20,11 +20,22 @@ FetchContent_MakeAvailable(wheels)
 
 # --------------------------------------------------------------------
 
-message(STATUS "FetchContent: fmtlib")
+# Compass
 
 FetchContent_Declare(
-        fmtlib
-        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG 8.0.1
+        compass
+        GIT_REPOSITORY https://gitlab.com/Lipovsky/compass.git
+        GIT_TAG master
 )
-FetchContent_MakeAvailable(fmtlib)
+FetchContent_MakeAvailable(compass)
+
+# --------------------------------------------------------------------
+
+message(STATUS "FetchContent: fmt")
+
+FetchContent_Declare(
+        fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+        GIT_TAG master
+)
+FetchContent_MakeAvailable(fmt)
