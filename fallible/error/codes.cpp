@@ -1,4 +1,5 @@
 #include <fallible/error/codes.hpp>
+#include "wheels/core/panic.hpp"
 
 namespace fallible {
 
@@ -21,7 +22,7 @@ std::string ErrorCodeName(int code) {
     CASE(Internal)
     CASE(NotSupported)
     default:
-      std::abort();
+      WHEELS_PANIC("unreachable");
   }
 }
 

@@ -4,6 +4,7 @@
 #include <fallible/error/codes.hpp>
 
 #include <fallible/context/make.hpp>
+#include <errno.h>
 
 namespace fallible {
 
@@ -43,6 +44,21 @@ class [[nodiscard]] ErrorBuilder {
 inline detail::ErrorBuilder Err(int32_t code, wheels::SourceLocation loc = wheels::SourceLocation::Current()) {
   return detail::ErrorBuilder(code, loc);
 }
+
+struct FromErrno {};
+
+inline detail::ErrorBuilder Err(FromErrno, wheels::SourceLocation loc = wheels::SourceLocation::Current()) {
+  auto code = std::make_error_code(static_cast<std::errc>(errno));
+  return detail::ErrorBuilder(ErrorCodes::Internal, loc)
+    .Domain(code.category().name())
+    .Reason(code.message());
+}
+
+#define THROW_ERRNO(reason) \
+  fallible::ThrowError(fallible::Err(fallible::FromErrno{}, WHEELS_HERE))
+
+#define SYSCALL_VERIFY(cond, reason) \
+  if (!(cond)) { THROW_ERRNO(reason); } else {}
 
 //////////////////////////////////////////////////////////////////////
 
