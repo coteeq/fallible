@@ -2,6 +2,7 @@
 
 #include <fallible/error/error.hpp>
 #include <fallible/error/codes.hpp>
+#include <fallible/error/throw.hpp>
 
 #include <fallible/context/make.hpp>
 #include <errno.h>
