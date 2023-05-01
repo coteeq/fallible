@@ -46,10 +46,10 @@ inline detail::ErrorBuilder Err(int32_t code, wheels::SourceLocation loc = wheel
   return detail::ErrorBuilder(code, loc);
 }
 
-struct FromErrno {};
+struct FromErrno {int err = 0;};
 
-inline detail::ErrorBuilder Err(FromErrno, wheels::SourceLocation loc = wheels::SourceLocation::Current()) {
-  auto code = std::make_error_code(static_cast<std::errc>(errno));
+inline detail::ErrorBuilder Err(FromErrno fe, wheels::SourceLocation loc = wheels::SourceLocation::Current()) {
+  auto code = std::make_error_code(static_cast<std::errc>(fe.err == 0 ? errno : fe.err));
   return detail::ErrorBuilder(ErrorCodes::Internal, loc)
     .Domain(code.category().name())
     .Reason(code.message());
