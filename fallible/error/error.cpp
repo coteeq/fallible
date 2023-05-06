@@ -29,12 +29,14 @@ bool Error::IsCancelled() const {
 
 std::string Error::Describe() const {
   std::stringstream out;
+  auto loc = SourceLocation();
 
-  out << "code = " << Code()
-      << " (" << ErrorCodeName(Code()) << ")"
-      << ", domain = " << Domain()
-      << ", reason = '" << Reason() << "'"
-      << ", origin = " << SourceLocation();
+  out << "\n" "code = " << Code()
+      << " (" << ErrorCodeName(Code()) << ")\n"
+      << "domain = " << Domain() << "\n"
+      << "reason = '" << Reason() << "'\n"
+      << "origin = " << loc.File() << ":" << loc.Line() << "\n"
+      << "         " << loc.Function();
 
   const auto& attrs = Attrs();
 
